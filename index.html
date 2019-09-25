@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1.0"
+    />
+    <title>Webmoti</title>
+
+    <!-- CSS  -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      media="screen,projection"
+    />
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="js/socket.io.js"></script>
+    <link href="css/main.css" rel="stylesheet" media="screen" />
+    <script src="js/zoom.js"></script>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    <!-- Material Design -->
+    <link
+      href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        var elems = document.querySelectorAll(".sidenav");
+        var instances = M.Sidenav.init(elems, {
+          inDuration: 350,
+          outDuration: 350,
+          edge: "left" //or right
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="logged-in-elements" style="display: none">
+      <nav class="light-blue lighten-1" role="navigation">
+        <div class="nav-wrapper container row">
+          <a id="logo-container" href="#" class="brand-logo"
+            ><img src="img/webmoti.jpg" style="width: 60px; height: 60px;"
+          /></a>
+          <ul class="right hide-on-med-and-down">
+            <li>
+              <div class="col s6"><i class="material-icons">cast</i></div>
+            </li>
+            <li>
+              <div class="input-field">
+                <input
+                  disabled
+                  placeholder="Pending"
+                  id="username"
+                  type="text"
+                  class="validate white-text"
+                />
+                <label for="targetUsername" class="white-text"
+                  >Your username:</label
+                >
+              </div>
+            </li>
+            <li><i class="material-icons" id="targetIcon">forward</i></li>
+            <li>
+              <div class="input-field">
+                <input
+                  placeholder="Target Username"
+                  id="targetUsername"
+                  type="text"
+                  class="validate white-text"
+                />
+              </div>
+            </li>
+
+            <li>
+              <div>
+                <a class="waves-effect waves-light btn" id="call"
+                  ><i class="material-icons left">call</i>Call</a
+                >
+              </div>
+            </li>
+            <li>
+              <div>
+                <a class="waves-effect waves-light red btn" id="hangup"
+                  ><i class="material-icons left">call_end</i>Hang Up</a
+                >
+              </div>
+            </li>
+            <li>
+              <div>
+                <a class="waves-effect waves-light purple btn" id="logout"
+                  ><i class="material-icons left">power_settings_new</i
+                  >Logout</a
+                >
+              </div>
+            </li>
+            <li>
+                <input
+                placeholder="Add Teacher Email"
+                id="addTeacherEmail"
+                type="text"
+                class="validate white-text"
+                style="display: none"
+              />
+            </li>
+          </ul>
+
+          <ul id="nav-mobile" class="sidenav">
+            <li><a href="#">Navbar Link</a></li>
+          </ul>
+          <a href="#" data-target="nav-mobile" class="sidenav-trigger"
+            ><i class="material-icons">menu</i></a
+          >
+        </div>
+      </nav>
+      <div class="section no-pad-bot">
+        <div class="container">
+          <div class="row">
+            <div class="offset-s3">
+              <div class="stage">
+                <video
+                  id="remoteVideo"
+                  autoplay="true"
+                  class="z-depth-2"
+                  controls
+                  style="width: 1280px; height: 720px;"
+                ></video>
+                <video id="localVideo" autoplay="true" muted="true"></video>
+              </div>
+            </div>
+            <div id="stage"></div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="page-footer orange">
+        <div class="container">
+          <div class="row">
+            <div class="col l6 s12">
+              <h5 class="white-text">Webmoti</h5>
+              <p class="grey-text text-lighten-4">Here are some instructions</p>
+            </div>
+            <div class="col l3 s12">
+              <h5 class="white-text">Settings</h5>
+              <ul>
+                <li><a class="white-text" href="#!">Link 1</a></li>
+                <li><a class="white-text" href="#!">Link 2</a></li>
+              </ul>
+            </div>
+            <div class="col l3 s12">
+              <h5 class="white-text">Connect</h5>
+              <ul>
+                <li><a class="white-text" href="#!">Link 1</a></li>
+                <li><a class="white-text" href="#!">Link 2</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="footer-copyright">
+          <div class="container">
+            An IMDC
+            <a class="orange-text text-lighten-3" href="http://webmoti.org/">
+              Project</a
+            >
+          </div>
+        </div>
+      </footer>
+    </div>
+    <div id="loggedOutElements"></div>
+    <!--  Scripts-->
+    <!-- This file is automatically added/served when running "node index.js". -->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

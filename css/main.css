@@ -1,0 +1,38 @@
+@import "./login.css";
+
+body {
+  font-family: sans-serif;
+}
+
+video
+{
+  max-width: 1280px !important;
+  max-height: 720px !important;
+  width: 1280px;
+  height: 800px;
+  position: absolute;
+}
+.stage{
+  width: 1280px;
+  height: 800px;
+  position:relative;
+  overflow: hidden;
+}
+
+#localVideo
+{
+  position:absolute;
+  bottom: 95px;
+  right:20px;
+  width: 200px;
+  height: 200px;
+}
+#change{position:absolute;right:-100px;top:-300px;width:100px;}
+button{font-size:150%;text-align:center;display:block;}
+#change button{width:60px;border:none;background:#fff;}
+
+.right {
+  width: 70vw;
+  
+}
+/* LOGIN STYLES */
