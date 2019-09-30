@@ -15,13 +15,7 @@
     />
 
     <!-- Compiled and minified CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-      media="screen,projection"
-    />
-    <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
     <script src="js/socket.io.js"></script>
     <link href="css/main.css" rel="stylesheet" media="screen" />
     <script src="js/zoom.js"></script>
@@ -39,45 +33,75 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
     />
     <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-        var elems = document.querySelectorAll(".sidenav");
-        var instances = M.Sidenav.init(elems, {
-          inDuration: 350,
-          outDuration: 350,
-          edge: "left" //or right
-        });
-      });
-    </script>
   </head>
   <body>
     <div id="logged-in-elements" style="display: none">
-      <nav class="light-blue lighten-1" role="navigation">
-        <div class="nav-wrapper container row">
-          <a id="logo-container" href="#" class="brand-logo"
-            ><img src="img/webmoti.jpg" style="width: 60px; height: 60px;"
-          /></a>
-          <ul class="right hide-on-med-and-down">
+      <aside class="mdc-drawer mdc-drawer--modal">
+        <div class="mdc-drawer__content">
+          <nav class="mdc-list">
+            <a
+              class="mdc-list-item mdc-list-item--activated"
+              href="#"
+              aria-selected="true"
+            >
+              <i
+                class="material-icons mdc-list-item__graphic"
+                aria-hidden="true"
+                >inbox</i
+              >
+              <span class="mdc-list-item__text">Inbox</span>
+            </a>
+            <a class="mdc-list-item" href="#">
+              <i
+                class="material-icons mdc-list-item__graphic"
+                aria-hidden="true"
+                >send</i
+              >
+              <span class="mdc-list-item__text">Outgoing</span>
+            </a>
+            <a class="mdc-list-item" href="#">
+              <i
+                class="material-icons mdc-list-item__graphic"
+                aria-hidden="true"
+                >drafts</i
+              >
+              <span class="mdc-list-item__text">Drafts</span>
+            </a>
+          </nav>
+        </div>
+      </aside>
+      <div class="mdc-drawer-scrim"></div>
+      <section
+        class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start"
+      >
+        <button
+          class="mdc-icon-button material-icons mdc-top-app-bar__navigation-icon mdc-ripple-upgraded--unbounded mdc-ripple-upgraded"
+          style="--mdc-ripple-fg-size:18px; --mdc-ripple-fg-scale:1; --mdc-ripple-left:10px; --mdc-ripple-top:10px;"
+        >
+          menu</button
+        ><span class="mdc-top-app-bar__title">Webmoti</span>
+      </section>
+      <nav class="" role="navigation">
+        <div class="">
+          <ul class="">
             <li>
-              <div class="col s6"><i class="material-icons">cast</i></div>
+              <i class="material-icons">cast</i>
             </li>
             <li>
-              <div class="input-field">
+              <label for="username" class="">Your Username:</label>
+              <div class="">
                 <input
                   disabled
                   placeholder="Pending"
                   id="username"
                   type="text"
-                  class="validate white-text"
+                  class=""
                 />
-                <label for="targetUsername" class="white-text"
-                  >Your username:</label
-                >
               </div>
             </li>
             <li><i class="material-icons" id="targetIcon">forward</i></li>
             <li>
+              <label for="targetUsername" class="">Teacher Username:</label>
               <div class="input-field">
                 <input
                   placeholder="Target Username"
@@ -111,7 +135,7 @@
               </div>
             </li>
             <li>
-                <input
+              <input
                 placeholder="Add Teacher Email"
                 id="addTeacherEmail"
                 type="text"
@@ -120,13 +144,6 @@
               />
             </li>
           </ul>
-
-          <ul id="nav-mobile" class="sidenav">
-            <li><a href="#">Navbar Link</a></li>
-          </ul>
-          <a href="#" data-target="nav-mobile" class="sidenav-trigger"
-            ><i class="material-icons">menu</i></a
-          >
         </div>
       </nav>
       <div class="section no-pad-bot">
@@ -191,5 +208,6 @@
     <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/indexDrawer.js"></script>
   </body>
 </html>

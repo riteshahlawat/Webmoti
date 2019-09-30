@@ -35,4 +35,8 @@ button{font-size:150%;text-align:center;display:block;}
   width: 70vw;
   
 }
+
+.mdc-top-app-bar__section {
+  padding: 0 !important;
+}
 /* LOGIN STYLES */
