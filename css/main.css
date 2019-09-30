@@ -2,6 +2,9 @@
 
 body {
   font-family: sans-serif;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow-x: hidden !important;
 }
 
 video
@@ -35,8 +38,48 @@ button{font-size:150%;text-align:center;display:block;}
   width: 70vw;
   
 }
-
+.main-nav {
+  width: 100vw;
+  background-color: transparent;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+}
+.main-nav-list {
+  display: flex;
+  flex-direction: row;
+}
 .mdc-top-app-bar__section {
   padding: 0 !important;
 }
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  display: flex;
+  flex-direction: row;
+  margin: 0 10px;
+  align-items: center;
+}
+
+label {
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px;
+  margin-right: 10px;
+}
+input {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+}
+.custom-button {
+  /* background-color: rgb(46, 36, 126) !important; */
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+}
+
 /* LOGIN STYLES */

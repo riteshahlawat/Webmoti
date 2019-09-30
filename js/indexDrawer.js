@@ -2,6 +2,8 @@ var drawer = mdc.drawer.MDCDrawer.attachTo(
   document.querySelector(".mdc-drawer")
 );
 
+const textField = new mdc.textField.MDCTextField(document.querySelector("#targetUsernameTextInput"));
+
 // Allow drawer to open
 var button = document.querySelector("button");
 mdc.ripple.MDCRipple.attachTo(button);
@@ -18,3 +20,5 @@ const listEl = document.querySelector('.mdc-drawer .mdc-list');
 listEl.addEventListener('click', (event) => {
   drawer.open = false;
 });
+
+

@@ -7,7 +7,11 @@
       content="width=device-width, initial-scale=1, maximum-scale=1.0"
     />
     <title>Webmoti</title>
-
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
+      rel="stylesheet"
+    />
     <!-- CSS  -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -81,70 +85,66 @@
           menu</button
         ><span class="mdc-top-app-bar__title">Webmoti</span>
       </section>
-      <nav class="" role="navigation">
-        <div class="">
-          <ul class="">
-            <li>
-              <i class="material-icons">cast</i>
-            </li>
-            <li>
-              <label for="username" class="">Your Username:</label>
-              <div class="">
-                <input
-                  disabled
-                  placeholder="Pending"
-                  id="username"
-                  type="text"
-                  class=""
-                />
-              </div>
-            </li>
-            <li><i class="material-icons" id="targetIcon">forward</i></li>
-            <li>
-              <label for="targetUsername" class="">Teacher Username:</label>
-              <div class="input-field">
-                <input
-                  placeholder="Target Username"
-                  id="targetUsername"
-                  type="text"
-                  class="validate white-text"
-                />
-              </div>
-            </li>
+      <nav class="main-nav" role="navigation">
+        <ul class="main-nav-list">
+          <li>
+            <!-- <label for="username" class="">Your Username:</label> -->
 
-            <li>
-              <div>
-                <a class="waves-effect waves-light btn" id="call"
-                  ><i class="material-icons left">call</i>Call</a
-                >
-              </div>
-            </li>
-            <li>
-              <div>
-                <a class="waves-effect waves-light red btn" id="hangup"
-                  ><i class="material-icons left">call_end</i>Hang Up</a
-                >
-              </div>
-            </li>
-            <li>
-              <div>
-                <a class="waves-effect waves-light purple btn" id="logout"
-                  ><i class="material-icons left">power_settings_new</i
-                  >Logout</a
-                >
-              </div>
-            </li>
-            <li>
-              <input
-                placeholder="Add Teacher Email"
-                id="addTeacherEmail"
+            <input
+              disabled
+              placeholder="Pending"
+              id="username"
+              type="text"
+              class=""
+            />
+          </li>
+          <li>
+            <!-- <label for="targetUsername" class="">Teacher Username:</label> -->
+            <div id="targetUsernameTextInput" class="mdc-text-field">
+                <input
+                id="targetUsername"
                 type="text"
-                class="validate white-text"
-                style="display: none"
-              />
-            </li>
-          </ul>
-        </div>
+                class="mdc-text-field__input"
+                />
+                <label class="mdc-floating-label" for="my-text-field">Target Username</label>
+                <div class="mdc-line-ripple"></div>
+            </div>
+            
+              
+          </li>
+
+          <li>
+            <a
+              class="mdc-button mdc-button--unelevated mdc-ripple-upgraded custom-button"
+              id="call"
+              ><i class="material-icons mdc-button__icon">call</i>Call</a
+            >
+          </li>
+          <li>
+            <a
+              class="mdc-button mdc-button--unelevated mdc-ripple-upgraded custom-button"
+              id="hangup"
+              ><i class="material-icons mdc-button__icon">call_end</i>Hang Up</a
+            >
+          </li>
+          <li>
+            <a
+              class="mdc-button mdc-button--unelevated mdc-ripple-upgraded custom-button"
+              id="logout"
+              ><i class="material-icons mdc-button__icon">power_settings_new</i
+              >Logout</a
+            >
+          </li>
+          <li>
+            <input
+              placeholder="Add Teacher Email"
+              id="addTeacherEmail"
+              type="text"
+              class="validate white-text"
+              style="display: none"
+            />
+          </li>
+        </ul>
       </nav>
       <div class="section no-pad-bot">
         <div class="container">
@@ -165,7 +165,11 @@
           </div>
         </div>
       </div>
-
+      
+        <input class="mdc-text-field__input" id="text-field-hero-input">
+        <div class="mdc-line-ripple"></div>
+        <label for="text-field-hero-input" class="mdc-floating-label">Name</label>
+      </div>
       <footer class="page-footer orange">
         <div class="container">
           <div class="row">
