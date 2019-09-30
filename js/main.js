@@ -17,22 +17,25 @@ var loggedInElements = document.getElementById("logged-in-elements");
 // Check if user is authenticated
 firebase.auth().onAuthStateChanged(user => {
   if (user) {
-     db.collection("Users").doc(user.email).get().then(doc => {
-          if(doc.exists) {
-            let data = doc.data();
-            console.log("Login Data: ", data);
-            loggedInElements.style.display = "block";
-            loggedIn(data);
-          } else {
-            // Undefined
-            console.log("No Such Document");
-            loggedInElements.style.display = "none";
-            window.location.replace("login.html");
-          }
-        }).catch(err => {
-          console.log("Error getting document: ", err);
-        });
-    
+    db.collection("Users")
+      .doc(user.email)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          let data = doc.data();
+          console.log("Login Data: ", data);
+          loggedInElements.style.display = "block";
+          loggedIn(data);
+        } else {
+          // Undefined
+          console.log("No Such Document");
+          loggedInElements.style.display = "none";
+          window.location.replace("login.html");
+        }
+      })
+      .catch(err => {
+        console.log("Error getting document: ", err);
+      });
   } else {
     // Redirect user to login
     loggedInElements.style.display = "none";
@@ -61,7 +64,6 @@ function loggedIn(user) {
   var hangupButton = document.getElementById("hangup");
   var callButton = document.getElementById("call");
   var logoutButton = document.getElementById("logout");
-  var addTeacherEmail = document.getElementById("addTeacherEmail");
   var localStream = null;
   var pc = null;
   var isCaller = true;
@@ -325,15 +327,44 @@ function loggedIn(user) {
   }
   function initialize() {
     let teacherEmail = user.teacherEmail;
-    if (teacherEmail != "") {
-      // Teacher email exists for that account
-      addTeacherEmail.style.display = "none";
-      targetUsername.value = teacherEmail;
-    } else {
-      // Teacher email does not exist
-      // Allow to initially set the teacher email
-      addTeacherEmail.style.display = "block"
-    }
+
+    targetUsername.value = teacherEmail;
+    /* --------------------------------------------- */
+    /* ------------MATERIAL DESIGN INIT--------------*/
+    /* --------------------------------------------- */
+
+    var drawer = mdc.drawer.MDCDrawer.attachTo(
+      document.querySelector(".mdc-drawer")
+    );
+
+    const targetUsernameTextInput = new mdc.textField.MDCTextField(
+      document.querySelector("#targetUsernameTextInput")
+    );
+    const usernameTextInput = new mdc.textField.MDCTextField(
+      document.querySelector("#usernameTextInput")
+    );
+
+    // Allow drawer to open
+    var button = document.querySelector("button");
+    mdc.ripple.MDCRipple.attachTo(button);
+    button.addEventListener("click", function() {
+      if (drawer.open) {
+        drawer.open = false;
+      } else {
+        drawer.open = true;
+      }
+    });
+
+    // Allow drawer to close when item in drawer is selected
+    const listEl = document.querySelector(".mdc-drawer .mdc-list");
+    listEl.addEventListener("click", event => {
+      drawer.open = false;
+    });
+
+    /* --------------------------------------------- */
+    /* --------------------------------------------- */
+    /* --------------------------------------------- */
+
     console.log("Identifying self with server: " + username.value);
     sendToServer(
       username.value,

@@ -51,26 +51,11 @@
               <i
                 class="material-icons mdc-list-item__graphic"
                 aria-hidden="true"
-                >inbox</i
+                >home</i
               >
-              <span class="mdc-list-item__text">Inbox</span>
+              <span class="mdc-list-item__text">Main</span>
             </a>
-            <a class="mdc-list-item" href="#">
-              <i
-                class="material-icons mdc-list-item__graphic"
-                aria-hidden="true"
-                >send</i
-              >
-              <span class="mdc-list-item__text">Outgoing</span>
-            </a>
-            <a class="mdc-list-item" href="#">
-              <i
-                class="material-icons mdc-list-item__graphic"
-                aria-hidden="true"
-                >drafts</i
-              >
-              <span class="mdc-list-item__text">Drafts</span>
-            </a>
+            
           </nav>
         </div>
       </aside>
@@ -89,24 +74,28 @@
         <ul class="main-nav-list">
           <li>
             <!-- <label for="username" class="">Your Username:</label> -->
-
-            <input
-              disabled
-              placeholder="Pending"
-              id="username"
-              type="text"
-              class=""
-            />
+            <div id="usernameTextInput" class="mdc-text-field">
+              <input
+                disabled
+                placeholder="Pending"
+                id="username"
+                type="text"
+                class="mdc-text-field__input"
+              />
+              <!-- <label class="mdc-floating-label" for="username">Target Username</label> -->
+              <div class="mdc-line-ripple"></div>
+            </div>
           </li>
           <li>
             <!-- <label for="targetUsername" class="">Teacher Username:</label> -->
             <div id="targetUsernameTextInput" class="mdc-text-field">
                 <input
+                disabled
                 id="targetUsername"
                 type="text"
                 class="mdc-text-field__input"
                 />
-                <label class="mdc-floating-label" for="my-text-field">Target Username</label>
+                <!-- <label class="mdc-floating-label" for="targetUsername">Target Username</label> -->
                 <div class="mdc-line-ripple"></div>
             </div>
             
@@ -135,40 +124,22 @@
               >Logout</a
             >
           </li>
-          <li>
-            <input
-              placeholder="Add Teacher Email"
-              id="addTeacherEmail"
-              type="text"
-              class="validate white-text"
-              style="display: none"
-            />
-          </li>
+          
         </ul>
       </nav>
-      <div class="section no-pad-bot">
-        <div class="container">
-          <div class="row">
-            <div class="offset-s3">
-              <div class="stage">
-                <video
-                  id="remoteVideo"
-                  autoplay="true"
-                  class="z-depth-2"
-                  controls
-                  style="width: 1280px; height: 720px;"
-                ></video>
-                <video id="localVideo" autoplay="true" muted="true"></video>
-              </div>
-            </div>
-            <div id="stage"></div>
-          </div>
-        </div>
+      <div class="stage">
+        <video
+          id="remoteVideo"
+          autoplay="true"
+          class="z-depth-2"
+          controls
+          style="width: 1280px; height: 720px;"
+        ></video>
+        <video id="localVideo" autoplay="true" muted="true"></video>
       </div>
+      <div id="stage"></div>
       
-        <input class="mdc-text-field__input" id="text-field-hero-input">
-        <div class="mdc-line-ripple"></div>
-        <label for="text-field-hero-input" class="mdc-floating-label">Name</label>
+        
       </div>
       <footer class="page-footer orange">
         <div class="container">
@@ -212,6 +183,5 @@
     <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/indexDrawer.js"></script>
   </body>
 </html>

@@ -1,12 +1,12 @@
 var firebaseConfig = {
-    apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
-    authDomain: "webmotia.firebaseapp.com",
-    databaseURL: "https://webmotia.firebaseio.com",
-    projectId: "webmotia",
-    storageBucket: "webmotia.appspot.com",
-    messagingSenderId: "606747164317",
-    appId: "1:606747164317:web:952c390708ccb09d"
-  };
+  apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
+  authDomain: "webmotia.firebaseapp.com",
+  databaseURL: "https://webmotia.firebaseio.com",
+  projectId: "webmotia",
+  storageBucket: "webmotia.appspot.com",
+  messagingSenderId: "606747164317",
+  appId: "1:606747164317:web:952c390708ccb09d"
+};
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
@@ -24,18 +24,31 @@ var uiConfig = {
       // Return type determines whether we continue the redirect automatically
       // or whether we leave that to developer to handle.
       db.collection("Users")
-      .doc(authResult.user.email)
-      .set({
-        email: authResult.user.email,
-        teacherEmail: "",
-        displayName: authResult.user.displayName
-      })
-      .then(function() {
-        window.location.replace("index.html");        
-      })
-      .catch(function(error) {
-        console.error("Error adding document: ", error);
-      });
+        .doc(authResult.user.email)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            let data = doc.data();
+            let teacherEmail = data.teacherEmail;
+            db.collection("Users")
+              .doc(authResult.user.email)
+              .set({
+                email: authResult.user.email,
+                teacherEmail: teacherEmail,
+                displayName: authResult.user.displayName
+              })
+              .then(function() {
+                window.location.replace("index.html");
+              })
+              .catch(function(error) {
+                console.error("Error adding document: ", error);
+              });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
       return false;
     },
     uiShown: function() {
@@ -49,7 +62,7 @@ var uiConfig = {
   signInSuccessUrl: "index.html",
   signInOptions: [
     // Leave the lines as is for the providers you want to offer your users.
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID
     // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
     // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
     // firebase.auth.GithubAuthProvider.PROVIDER_ID,
