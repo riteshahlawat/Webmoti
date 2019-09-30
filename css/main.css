@@ -82,4 +82,9 @@ input {
   font-size: 20px;
 }
 
+.stage {
+  margin-top: 20px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
 /* LOGIN STYLES */
