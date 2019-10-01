@@ -44,6 +44,7 @@ firebase.auth().onAuthStateChanged(user => {
 });
 
 function logOut() {
+
   firebase.auth().signOut();
 }
 
@@ -63,7 +64,33 @@ function loggedIn(user) {
   var localVideo = document.getElementById("localVideo");
   var hangupButton = document.getElementById("hangup");
   var callButton = document.getElementById("call");
-  var logoutButton = document.getElementById("logout");
+  var logoutButton = document.getElementById("drawer-logout-button");
+
+  // drawer setup
+  var drawer = mdc.drawer.MDCDrawer.attachTo(
+    document.querySelector(".mdc-drawer")
+  );
+  var drawerList = new mdc.list.MDCList(document.getElementById("drawer-list"));
+  // header setup
+  var drawerHeaderName = document.getElementById("drawer-header-name");
+  var drawerHeaderEmail = document.getElementById("drawer-header-email");
+  var drawerSettingsButton = document.getElementById("drawer-settings-button");
+  var drawerHomeButton = document.getElementById("drawer-home-button");
+  const targetUsernameTextInput = new mdc.textField.MDCTextField(
+    document.querySelector("#targetUsernameTextInput")
+  );
+  const usernameTextInput = new mdc.textField.MDCTextField(
+    document.querySelector("#usernameTextInput")
+  );
+  // Allow drawer to open
+  var drawerOpenButton = document.querySelector("button");
+
+  // settgings modal
+  var settingsModal = document.getElementById("myModal");
+  var settingsSpan = document.getElementsByClassName("close")[0];
+
+  
+
   var localStream = null;
   var pc = null;
   var isCaller = true;
@@ -332,22 +359,28 @@ function loggedIn(user) {
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
+    
 
-    var drawer = mdc.drawer.MDCDrawer.attachTo(
-      document.querySelector(".mdc-drawer")
-    );
+    // open modal to see settins for user
+    drawerSettingsButton.addEventListener("click", event => {
+      // makes so that settings is not a transitionable drawer button
+      // it is in a timeout because of conflict css transitions which solves 
+      //the problem
+      setTimeout(() => {
+        drawerList.selectedIndex = 0;
+        drawerSettingsButton.classList.remove("mdc-list-item--activated");
+        drawerHomeButton.classList.add("mdc-list-item--activated");
+        settingsModal.style.display = "block";
+      }, 5);      
+    })
 
-    const targetUsernameTextInput = new mdc.textField.MDCTextField(
-      document.querySelector("#targetUsernameTextInput")
-    );
-    const usernameTextInput = new mdc.textField.MDCTextField(
-      document.querySelector("#usernameTextInput")
-    );
 
-    // Allow drawer to open
-    var button = document.querySelector("button");
-    mdc.ripple.MDCRipple.attachTo(button);
-    button.addEventListener("click", function() {
+    drawerHeaderName.innerHTML = user.displayName;
+    drawerHeaderEmail.innerHTML = user.email;
+
+    
+    mdc.ripple.MDCRipple.attachTo(drawerOpenButton);
+    drawerOpenButton.addEventListener("click", function() {
       if (drawer.open) {
         drawer.open = false;
       } else {
@@ -359,6 +392,16 @@ function loggedIn(user) {
     const listEl = document.querySelector(".mdc-drawer .mdc-list");
     listEl.addEventListener("click", event => {
       drawer.open = false;
+    });
+
+    settingsSpan.addEventListener("click", () => {
+      settingsModal.style.display = "none";
+    });
+
+    window.addEventListener("click", event => {
+      if(event.target == settingsModal) {
+        settingsModal.style.display = "none";
+      }
     });
 
     /* --------------------------------------------- */

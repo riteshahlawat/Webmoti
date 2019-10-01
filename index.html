@@ -40,12 +40,35 @@
   </head>
   <body>
     <div id="logged-in-elements" style="display: none">
+      <div style="display: none;" id="myModal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2>Modal Header</h2>
+          </div>
+          <div class="modal-body">
+            <p>Some text in the Modal Body</p>
+            <p>Some other text...</p>
+          </div>
+          <div class="modal-footer">
+            <h3>Modal Footer</h3>
+          </div>
+        </div>
+      
+      </div>
       <aside class="mdc-drawer mdc-drawer--modal">
+          <div class="mdc-drawer__header">
+            <h3 id="drawer-header-name" class="mdc-drawer__title">Mail</h3>
+            <h6 id="drawer-header-email" class="mdc-drawer__subtitle">email@material.io</h6>
+          </div>
         <div class="mdc-drawer__content">
-          <nav class="mdc-list">
+          <nav id="drawer-list" class="mdc-list">
             <a
+              id="drawer-home-button"
               class="mdc-list-item mdc-list-item--activated"
-              href="#"
+              href=""
               aria-selected="true"
             >
               <i
@@ -54,6 +77,30 @@
                 >home</i
               >
               <span class="mdc-list-item__text">Main</span>
+            </a>
+            <hr class="mdc-list-divider">
+            <a
+              id="drawer-settings-button"
+              class="mdc-list-item"
+              aria-selected="true"
+            >
+              <i
+                class="material-icons mdc-list-item__graphic"
+                aria-hidden="true"
+                >settings</i
+              >
+              <span class="mdc-list-item__text">Settings</span>
+              <a
+              id="drawer-logout-button"
+              class="mdc-list-item"
+              aria-selected="true"
+            >
+              <i
+                class="material-icons mdc-list-item__graphic"
+                aria-hidden="true"
+                >power_settings_new</i
+              >
+              <span class="mdc-list-item__text">Logout</span>
             </a>
             
           </nav>
@@ -116,14 +163,7 @@
               ><i class="material-icons mdc-button__icon">call_end</i>Hang Up</a
             >
           </li>
-          <li>
-            <a
-              class="mdc-button mdc-button--unelevated mdc-ripple-upgraded custom-button"
-              id="logout"
-              ><i class="material-icons mdc-button__icon">power_settings_new</i
-              >Logout</a
-            >
-          </li>
+          
           
         </ul>
       </nav>
