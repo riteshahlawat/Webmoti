@@ -34,6 +34,27 @@ video
 button{font-size:150%;text-align:center;display:block;}
 #change button{width:60px;border:none;background:#fff;}
 
+#hangup {
+  min-height: 40px !important;
+  min-width: 100px !important;
+}
+#call {
+  min-height: 40px !important;
+  min-width: 100px !important;
+}
+#username {
+  font-size: 18px;
+  user-select: none;
+}
+#usernameTextInput {
+  transform: scale(0.9);
+}
+#targetUsername {
+  font-size: 18px;
+}
+#targetUsernameTextInput {
+  transform: scale(0.9);
+}
 .right {
   width: 70vw;
   
@@ -51,6 +72,8 @@ button{font-size:150%;text-align:center;display:block;}
 .main-nav-list {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  padding-left: 0 !important;
 }
 .mdc-top-app-bar__section {
   padding: 0 !important;
