@@ -370,7 +370,7 @@ function loggedIn(user) {
         drawerList.selectedIndex = 0;
         drawerSettingsButton.classList.remove("mdc-list-item--activated");
         drawerHomeButton.classList.add("mdc-list-item--activated");
-        settingsModal.style.display = "block";
+        settingsModal.style.display = "flex";
       }, 5);      
     })
 
