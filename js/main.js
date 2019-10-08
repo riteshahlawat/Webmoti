@@ -88,7 +88,11 @@ function loggedIn(user) {
   // settgings modal
   var settingsModal = document.getElementById("myModal");
   var settingsSpan = document.getElementsByClassName("close")[0];
-
+  const teacherChangeEmailTextInput = new mdc.textField.MDCTextField(
+    document.querySelector("#teacher-input-text-field")
+  );
+  var teacherChangeEmailLabel = document.getElementById("teacher-input-label-field");
+  var teacherChangeEmailInput = document.getElementById("teacher-change-email-input");
   
 
   var localStream = null;
@@ -404,9 +408,16 @@ function loggedIn(user) {
       }
     });
 
+    // Initial teacher email change input setup
+    teacherChangeEmailInput.value = user.teacherEmail;
+    teacherChangeEmailInput.disabled = true;
+    teacherChangeEmailInput.style.color = "#a6a6a6";
+    teacherChangeEmailLabel.innerHTML = "";
+
     /* --------------------------------------------- */
     /* --------------------------------------------- */
     /* --------------------------------------------- */
+
 
     console.log("Identifying self with server: " + username.value);
     sendToServer(
