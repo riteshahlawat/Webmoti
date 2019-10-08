@@ -216,7 +216,11 @@ input {
   margin-top: 15px;
   margin-bottom: 0px;
 }
-
+#teacher-change-buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-right: 30%;
+}
 .modal-footer {
   height: 5%;
   background-color: white;

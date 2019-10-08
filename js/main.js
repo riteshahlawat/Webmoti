@@ -44,12 +44,12 @@ firebase.auth().onAuthStateChanged(user => {
 });
 
 function logOut() {
-
   firebase.auth().signOut();
 }
 
 // Runs once logged in
-function loggedIn(user) {
+function loggedIn(initialUser) {
+  var user = initialUser;
   //Initialize Socket.io
   var socket = io("http://localhost:3000", { reconnectionAttempts: 3 });
 
@@ -83,7 +83,7 @@ function loggedIn(user) {
     document.querySelector("#usernameTextInput")
   );
   // Allow drawer to open
-  var drawerOpenButton = document.querySelector("button");
+  var drawerOpenButton = document.getElementById("drawer-open-button");
 
   // settgings modal
   var settingsModal = document.getElementById("myModal");
@@ -91,9 +91,24 @@ function loggedIn(user) {
   const teacherChangeEmailTextInput = new mdc.textField.MDCTextField(
     document.querySelector("#teacher-input-text-field")
   );
-  var teacherChangeEmailLabel = document.getElementById("teacher-input-label-field");
-  var teacherChangeEmailInput = document.getElementById("teacher-change-email-input");
-  
+  var teacherChangeEmailLabel = document.getElementById(
+    "teacher-input-label-field"
+  );
+  var teacherChangeEmailInput = document.getElementById(
+    "teacher-change-email-input"
+  );
+  var editSaveTeacherEmailButton = document.getElementById(
+    "edit-teacher-email-button"
+  );
+  var editSaveTeacherEmailSpan = new mdc.ripple.MDCRipple(
+    document.getElementById("edit-teacher-email-span")
+  );
+  var teacherEmailChangeNotch = document.getElementById(
+    "teacher-change-email-notch"
+  );
+  var teacherEmailChangeWidth = document.getElementById(
+    "teacher-change-email-width"
+  );
 
   var localStream = null;
   var pc = null;
@@ -363,27 +378,25 @@ function loggedIn(user) {
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
-    
 
     // open modal to see settins for user
     drawerSettingsButton.addEventListener("click", event => {
       // makes so that settings is not a transitionable drawer button
-      // it is in a timeout because of conflict css transitions which solves 
+      // it is in a timeout because of conflict css transitions which solves
       //the problem
       setTimeout(() => {
         drawerList.selectedIndex = 0;
         drawerSettingsButton.classList.remove("mdc-list-item--activated");
         drawerHomeButton.classList.add("mdc-list-item--activated");
         settingsModal.style.display = "flex";
-      }, 5);      
-    })
-
+      }, 5);
+    });
 
     drawerHeaderName.innerHTML = user.displayName;
     drawerHeaderEmail.innerHTML = user.email;
 
-    
     mdc.ripple.MDCRipple.attachTo(drawerOpenButton);
+
     drawerOpenButton.addEventListener("click", function() {
       if (drawer.open) {
         drawer.open = false;
@@ -403,8 +416,22 @@ function loggedIn(user) {
     });
 
     window.addEventListener("click", event => {
-      if(event.target == settingsModal) {
+      if (event.target == settingsModal) {
         settingsModal.style.display = "none";
+        // Reset teacher email editing
+        teacherChangeEmailInput.value = user.teacherEmail;
+        teacherChangeEmailInput.disabled = true;
+        teacherChangeEmailInput.style.color = "#a6a6a6";
+        teacherChangeEmailLabel.innerHTML = "";
+        editSaveTeacherEmailButton.innerText = "EDIT";
+        // Remove notch, floating property, and reset width
+        teacherEmailChangeNotch.classList.remove(
+          "mdc-notched-outline--notched"
+        );
+        teacherChangeEmailLabel.classList.remove(
+          "mdc-floating-label--float-above"
+        );
+        teacherEmailChangeWidth.style.width = null;
       }
     });
 
@@ -414,10 +441,53 @@ function loggedIn(user) {
     teacherChangeEmailInput.style.color = "#a6a6a6";
     teacherChangeEmailLabel.innerHTML = "";
 
-    /* --------------------------------------------- */
-    /* --------------------------------------------- */
-    /* --------------------------------------------- */
+    // Edit/Save button
+    var tempEmailInput = "";
+    editSaveTeacherEmailButton.addEventListener("click", () => {
+      // Clicked on edit
+      if (editSaveTeacherEmailButton.innerText == "EDIT") {
+        editSaveTeacherEmailButton.innerText = "SAVE";
+        tempEmailInput = teacherChangeEmailInput.value;
+        teacherChangeEmailInput.value = "";
+        teacherChangeEmailInput.disabled = false;
+        teacherChangeEmailInput.style.color = "black";
+        teacherChangeEmailLabel.innerHTML = "Teacher Email";
+        // teacherEmailChangeNotch.classList.add("mdc-notched-outline--notched");
+      }
+      // Clicked on save
+      else {
+        editSaveTeacherEmailButton.innerText = "EDIT";
+        console.log("Uploading email:", teacherChangeEmailInput.value);
+        db.collection("Users")
+          .doc(user.email)
+          .set({
+            displayName: user.displayName,
+            email: user.email,
+            teacherEmail: teacherChangeEmailInput.value
+          })
+          .then(function() {
+            teacherChangeEmailInput.disabled = true;
+            teacherChangeEmailInput.style.color = "#a6a6a6";
+            teacherChangeEmailLabel.innerHTML = "";
+            user.teacherEmail = teacherChangeEmailInput.value;
+            targetUsername.value = teacherChangeEmailInput.value;
+            teacherEmailChangeNotch.classList.remove(
+              "mdc-notched-outline--notched"
+            );
+            console.log(user);
+            console.log("Email Changed!!!");
+          })
+          .catch(function(error) {
+            editSaveTeacherEmailButton.innerText = "SAVE";
+            console.error("Error changing email: ", error);
+          });
+      }
+      // teacherChangeEmailInput.value = "";
+    });
 
+    /* --------------------------------------------- */
+    /* --------------------------------------------- */
+    /* --------------------------------------------- */
 
     console.log("Identifying self with server: " + username.value);
     sendToServer(
@@ -535,7 +605,7 @@ function loggedIn(user) {
       .doc(username.value)
       .onSnapshot(
         function(doc) {
-          if (doc) {
+          if (doc.exists) {
             console.log("Received data: ", doc.data());
 
             var user = doc.data().username;
