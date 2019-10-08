@@ -139,8 +139,8 @@ input {
   background-color: #fefefe;
   padding: 0;
   border: 1px solid #888;
-  width: 50%;
-  height: 50%;
+  width: 30%;
+  height: 40%;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
@@ -188,7 +188,7 @@ input {
   font-size: 25px;
   font-weight: 100;
   /* top: 50%; */
-  transform: translate(0, -25%);
+  transform: translate(0, -55%);
 }
 .modal-body {
   height: 80%;
@@ -218,8 +218,8 @@ input {
 }
 #teacher-change-buttons {
   display: flex;
-  justify-content: space-around;
-  margin-right: 30%;
+  justify-content: flex-start;
+  /* margin-right: 30%; */
 }
 .modal-footer {
   height: 5%;
