@@ -54,10 +54,12 @@ function loggedIn(initialUser) {
   var socket = io("http://localhost:3000", { reconnectionAttempts: 3 });
 
   //Initializing the variables
+  var teacherUser;
   var email = user.email;
   const constraints = { audio: true, video: true };
   var targetIcon = document.getElementById("targetIcon");
   var targetUsername = document.getElementById("targetUsername");
+  var targetUsernameLabel = document.getElementById("targetUsernameLabel");
   var username = document.getElementById("username");
   var roleRadio = document.getElementById("roleRadio");
   var remoteVideo = document.getElementById("remoteVideo");
@@ -109,7 +111,7 @@ function loggedIn(initialUser) {
   var teacherEmailChangeWidth = document.getElementById(
     "teacher-change-email-width"
   );
-
+  
   var localStream = null;
   var pc = null;
   var isCaller = true;
@@ -374,7 +376,25 @@ function loggedIn(initialUser) {
   function initialize() {
     let teacherEmail = user.teacherEmail;
 
+
     targetUsername.value = teacherEmail;
+    db.collection("Users")
+      .doc(user.teacherEmail)
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          teacherUser = doc.data();
+          targetUsernameLabel.innerHTML = teacherUser.displayName;
+        } else {
+          // Undefined
+          console.log("No Such Document");
+          
+        }
+      })
+      .catch(err => {
+        console.log("Error getting document: ", err);
+      });
+    
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
@@ -432,6 +452,17 @@ function loggedIn(initialUser) {
           "mdc-floating-label--float-above"
         );
         teacherEmailChangeWidth.style.width = null;
+      }
+      if (event.target == targetUsername) {
+        targetUsernameLabel.innerHTML = "Custom Call";
+      }
+      if (event.target != targetUsername) {
+        if (targetUsernameTextInput.value == "") {
+          targetUsernameTextInput.value = user.teacherEmail;
+          targetUsernameLabel.innerHTML = teacherUser.displayName;
+        } else if (targetUsernameTextInput.value == user.teacherEmail) {
+          targetUsernameLabel.innerHTML = teacherUser.displayName;
+        }
       }
     });
 
