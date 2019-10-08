@@ -61,6 +61,7 @@ function loggedIn(initialUser) {
   var targetUsername = document.getElementById("targetUsername");
   var targetUsernameLabel = document.getElementById("targetUsernameLabel");
   var username = document.getElementById("username");
+  var usernameLabel = document.getElementById("usernameLabel");
   var roleRadio = document.getElementById("roleRadio");
   var remoteVideo = document.getElementById("remoteVideo");
   var localVideo = document.getElementById("localVideo");
@@ -375,9 +376,9 @@ function loggedIn(initialUser) {
   }
   function initialize() {
     let teacherEmail = user.teacherEmail;
-
-
     targetUsername.value = teacherEmail;
+    usernameLabel.innerHTML = user.displayName;
+    
     db.collection("Users")
       .doc(user.teacherEmail)
       .get()
