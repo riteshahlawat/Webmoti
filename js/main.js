@@ -463,6 +463,7 @@ function loggedIn(initialUser) {
           targetUsernameLabel.innerHTML = teacherUser.displayName;
         } else if (targetUsernameTextInput.value == user.teacherEmail) {
           targetUsernameLabel.innerHTML = teacherUser.displayName;
+          
         }
       }
     });
