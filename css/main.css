@@ -221,6 +221,9 @@ input {
   justify-content: flex-start;
   /* margin-right: 30%; */
 }
+#teacher-input-retype-text-field {
+  margin-top: 15px;
+}
 .modal-footer {
   height: 5%;
   background-color: white;

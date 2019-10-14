@@ -42,41 +42,65 @@
   </head>
   <body>
     <div id="logged-in-elements" style="display: none">
-      <div style="display: none;" id="myModal" class="modal">
-
-        <!-- Modal content -->
-        <div class="modal-content">
-          <div class="modal-header">
-            <div id="modal-header-container">
-              <h2 id="modal-header-title">Settings</h2>
-            </div>
-            <span class="close">&times;</span>
+      <div id="change-teacher-email-snackback" class="mdc-snackbar">
+        <div class="mdc-snackbar__surface">
+          <div class="mdc-snackbar__label"
+               role="status"
+               aria-live="polite">
+            Teacher's email changed
           </div>
-          <div class="modal-body">
-            <div id="modal-change-teacher-email-text">
-              <h4>Change Teacher Email</h4>
-            </div>
-            <div id="modal-change-teacher-email">
-              <div id="teacher-input-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
-                <input type="text" id="teacher-change-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
-                <div id="teacher-change-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
-                  <div class="mdc-notched-outline__leading"></div>
-                  <div id="teacher-change-email-width" class="mdc-notched-outline__notch" style="">
-                    <label id="teacher-input-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Email</label>
-                  </div>
-                  <div class="mdc-notched-outline__trailing"></div>
-                </div>
-              </div>
-              <div id="teacher-change-buttons">
-                  <button id="edit-teacher-email-button" class="demo-button mdc-button mdc-button--outlined mdc-ripple-upgraded">
-                    <span id="edit-teacher-email-span" class="mdc-button__label">edit</span>
-                  </button>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
+          <div class="mdc-snackbar__actions">
+            <button id="undo-change-teacher-email-button" type="button" class="mdc-button mdc-snackbar__action">Undo</button>
+            <button class="mdc-icon-button mdc-snackbar__dismiss material-icons" title="Dismiss">close</button>
           </div>
         </div>
+      </div>
+      <div style="display: none;" id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <div id="modal-header-container">
+            <h2 id="modal-header-title">Settings</h2>
+          </div>
+          <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div id="modal-change-teacher-email-text">
+            <h4>Change Teacher Email</h4>
+          </div>
+          <div id="modal-change-teacher-email">
+            <div id="teacher-input-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
+              <input type="text" id="teacher-change-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+              <div id="teacher-change-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
+                <div class="mdc-notched-outline__leading"></div>
+                <div id="teacher-change-email-width" class="mdc-notched-outline__notch" style="">
+                  <label id="teacher-input-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Email</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+              </div>
+            </div>
+            
+            <div id="teacher-change-buttons">
+                <button id="edit-teacher-email-button" class="demo-button mdc-button mdc-button--outlined mdc-ripple-upgraded">
+                  <span id="edit-teacher-email-span" class="mdc-button__label">save</span>
+                </button>
+            </div>
+          </div>
+          <div id="teacher-input-retype-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
+            <input type="text" id="teacher-retype-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+            <div id="teacher-retype-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
+              <div class="mdc-notched-outline__leading"></div>
+              <div id="teacher-retype-email-width" class="mdc-notched-outline__notch" style="">
+                <label id="teacher-input-retype-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Retype Email</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
       
       </div>
       <aside class="mdc-drawer mdc-drawer--modal">

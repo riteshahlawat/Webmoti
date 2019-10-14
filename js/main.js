@@ -94,13 +94,16 @@ function loggedIn(initialUser) {
   const teacherChangeEmailTextInput = new mdc.textField.MDCTextField(
     document.querySelector("#teacher-input-text-field")
   );
+  var teacherInputTextField = document.getElementById(
+    "teacher-input-text-field"
+  );
   var teacherChangeEmailLabel = document.getElementById(
     "teacher-input-label-field"
   );
   var teacherChangeEmailInput = document.getElementById(
     "teacher-change-email-input"
   );
-  var editSaveTeacherEmailButton = document.getElementById(
+  var saveTeacherEmailButton = document.getElementById(
     "edit-teacher-email-button"
   );
   var editSaveTeacherEmailSpan = new mdc.ripple.MDCRipple(
@@ -112,7 +115,21 @@ function loggedIn(initialUser) {
   var teacherEmailChangeWidth = document.getElementById(
     "teacher-change-email-width"
   );
-  
+  const teacherChangeEmailSnackbar = new mdc.snackbar.MDCSnackbar(
+    document.getElementById("change-teacher-email-snackback")
+  );
+  var undoTeacherEmailChangeButton = document.getElementById(
+    "undo-change-teacher-email-button"
+  );
+  const teacherRetypeEmailInput = new mdc.textField.MDCTextField(
+    document.querySelector("#teacher-input-retype-text-field")
+  );
+  var teacherRetypeEmailInputWorkable = document.getElementById(
+    "teacher-input-retype-text-field"
+  );
+
+  var previousTeacherEmail;
+
   var localStream = null;
   var pc = null;
   var isCaller = true;
@@ -378,7 +395,7 @@ function loggedIn(initialUser) {
     let teacherEmail = user.teacherEmail;
     targetUsername.value = teacherEmail;
     usernameLabel.innerHTML = user.displayName;
-    
+
     db.collection("Users")
       .doc(user.teacherEmail)
       .get()
@@ -389,13 +406,12 @@ function loggedIn(initialUser) {
         } else {
           // Undefined
           console.log("No Such Document");
-          
         }
       })
       .catch(err => {
         console.log("Error getting document: ", err);
       });
-    
+
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
@@ -406,10 +422,21 @@ function loggedIn(initialUser) {
       // it is in a timeout because of conflict css transitions which solves
       //the problem
       setTimeout(() => {
+        saveTeacherEmailButton.style.display = "none";
+        teacherRetypeEmailInputWorkable.style.display = "none";
         drawerList.selectedIndex = 0;
         drawerSettingsButton.classList.remove("mdc-list-item--activated");
         drawerHomeButton.classList.add("mdc-list-item--activated");
         settingsModal.style.display = "flex";
+        // Initial teacher email change input setup
+        teacherChangeEmailInput.value = user.teacherEmail;
+        teacherChangeEmailLabel.innerHTML = "Teacher Email";
+        teacherEmailChangeNotch.classList.add("mdc-notched-outline--notched");
+        teacherChangeEmailLabel.classList.add(
+          "mdc-floating-label--float-above"
+        );
+        teacherEmailChangeWidth.style.width = "85.4px";
+        previousTeacherEmail = targetUsername.value;
       }, 5);
     });
 
@@ -433,7 +460,7 @@ function loggedIn(initialUser) {
     });
 
     settingsSpan.addEventListener("click", () => {
-      settingsModal.style.display = "none";
+      settingsModal.click();
     });
 
     window.addEventListener("click", event => {
@@ -441,10 +468,7 @@ function loggedIn(initialUser) {
         settingsModal.style.display = "none";
         // Reset teacher email editing
         teacherChangeEmailInput.value = user.teacherEmail;
-        teacherChangeEmailInput.disabled = true;
-        teacherChangeEmailInput.style.color = "#a6a6a6";
         teacherChangeEmailLabel.innerHTML = "";
-        editSaveTeacherEmailButton.innerText = "EDIT";
         // Remove notch, floating property, and reset width
         teacherEmailChangeNotch.classList.remove(
           "mdc-notched-outline--notched"
@@ -452,7 +476,6 @@ function loggedIn(initialUser) {
         teacherChangeEmailLabel.classList.remove(
           "mdc-floating-label--float-above"
         );
-        teacherEmailChangeWidth.style.width = null;
       }
       if (event.target == targetUsername) {
         targetUsernameLabel.innerHTML = "Custom Call";
@@ -460,36 +483,47 @@ function loggedIn(initialUser) {
       if (event.target != targetUsername) {
         if (targetUsernameTextInput.value == "") {
           targetUsernameTextInput.value = user.teacherEmail;
-          targetUsernameLabel.innerHTML = teacherUser.displayName;
+          targetUsernameLabel.innerHTML = "Target Username";
         } else if (targetUsernameTextInput.value == user.teacherEmail) {
           targetUsernameLabel.innerHTML = teacherUser.displayName;
-          
         }
       }
     });
-
-    // Initial teacher email change input setup
-    teacherChangeEmailInput.value = user.teacherEmail;
-    teacherChangeEmailInput.disabled = true;
-    teacherChangeEmailInput.style.color = "#a6a6a6";
-    teacherChangeEmailLabel.innerHTML = "";
+    // Undo button
+    undoTeacherEmailChangeButton.addEventListener("click", () => {
+      console.log(previousTeacherEmail);
+      db.collection("Users")
+        .doc(user.email)
+        .set({
+          displayName: user.displayName,
+          email: user.email,
+          teacherEmail: previousTeacherEmail
+        })
+        .then(function() {
+          teacherChangeEmailLabel.innerHTML = "Teacher Email";
+          user.teacherEmail = previousTeacherEmail;
+          targetUsername.value = previousTeacherEmail;
+          teacherChangeEmailSnackbar.close();
+          console.log("Undid Change");
+        })
+        .catch(function(error) {
+          console.error("Error changing email: ", error);
+        });
+    });
 
     // Edit/Save button
     var tempEmailInput = "";
-    editSaveTeacherEmailButton.addEventListener("click", () => {
-      // Clicked on edit
-      if (editSaveTeacherEmailButton.innerText == "EDIT") {
-        editSaveTeacherEmailButton.innerText = "SAVE";
-        tempEmailInput = teacherChangeEmailInput.value;
-        teacherChangeEmailInput.value = "";
-        teacherChangeEmailInput.disabled = false;
-        teacherChangeEmailInput.style.color = "black";
-        teacherChangeEmailLabel.innerHTML = "Teacher Email";
-        // teacherEmailChangeNotch.classList.add("mdc-notched-outline--notched");
-      }
-      // Clicked on save
-      else {
-        editSaveTeacherEmailButton.innerText = "EDIT";
+    teacherChangeEmailInput.addEventListener("click", () => {
+      teacherRetypeEmailInputWorkable.style.display = "flex";
+      saveTeacherEmailButton.style.display = "block";
+      tempEmailInput = teacherChangeEmailInput.value;
+      teacherChangeEmailInput.value = "";
+      teacherChangeEmailLabel.innerHTML = "Teacher Email";
+    });
+    saveTeacherEmailButton.addEventListener(
+      "click",
+      () => {
+        // Clicked on save
         console.log("Uploading email:", teacherChangeEmailInput.value);
         db.collection("Users")
           .doc(user.email)
@@ -499,24 +533,20 @@ function loggedIn(initialUser) {
             teacherEmail: teacherChangeEmailInput.value
           })
           .then(function() {
-            teacherChangeEmailInput.disabled = true;
-            teacherChangeEmailInput.style.color = "#a6a6a6";
-            teacherChangeEmailLabel.innerHTML = "";
+            teacherChangeEmailLabel.innerHTML = "Teacher Email";
             user.teacherEmail = teacherChangeEmailInput.value;
             targetUsername.value = teacherChangeEmailInput.value;
-            teacherEmailChangeNotch.classList.remove(
-              "mdc-notched-outline--notched"
-            );
+            settingsModal.click();
+            teacherChangeEmailSnackbar.open();
             console.log(user);
             console.log("Email Changed!!!");
           })
           .catch(function(error) {
-            editSaveTeacherEmailButton.innerText = "SAVE";
             console.error("Error changing email: ", error);
           });
       }
       // teacherChangeEmailInput.value = "";
-    });
+    );
 
     /* --------------------------------------------- */
     /* --------------------------------------------- */
