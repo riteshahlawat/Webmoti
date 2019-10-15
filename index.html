@@ -42,6 +42,7 @@
   </head>
   <body>
     <div id="logged-in-elements" style="display: none">
+      <!-- Snackbars -->
       <div id="change-teacher-email-snackback" class="mdc-snackbar">
         <div class="mdc-snackbar__surface">
           <div class="mdc-snackbar__label"
@@ -55,8 +56,31 @@
           </div>
         </div>
       </div>
+      <div id="teacher-email-change-different-snackbar" class="mdc-snackbar">
+        <div class="mdc-snackbar__surface">
+          <div class="mdc-snackbar__label"
+               role="status"
+               aria-live="polite">
+            Emails not mactching
+          </div>
+          <div class="mdc-snackbar__actions">
+            <button class="mdc-icon-button mdc-snackbar__dismiss material-icons" title="Dismiss">close</button>
+          </div>
+        </div>
+      </div>
       <div style="display: none;" id="myModal" class="modal">
-
+        <div id="improper-teacher-change-email-snackbar" class="mdc-snackbar">
+          <div class="mdc-snackbar__surface">
+            <div class="mdc-snackbar__label"
+                 role="status"
+                 aria-live="polite">
+              Improper email format
+            </div>
+            <div class="mdc-snackbar__actions">
+              <button class="mdc-icon-button mdc-snackbar__dismiss material-icons" title="Dismiss">close</button>
+            </div>
+          </div>
+        </div>
       <!-- Modal content -->
       <div class="modal-content">
         <div class="modal-header">

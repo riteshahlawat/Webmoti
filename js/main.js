@@ -127,6 +127,15 @@ function loggedIn(initialUser) {
   var teacherRetypeEmailInputWorkable = document.getElementById(
     "teacher-input-retype-text-field"
   );
+  var teacherChangeRetypeInput = document.getElementById(
+    "teacher-retype-email-input"
+  );
+  const teacherChangeEmailDifferentSnackbar = new mdc.snackbar.MDCSnackbar(
+    document.getElementById("teacher-email-change-different-snackbar")
+  );
+  const teacherImproperChangeEmailSnackbar = new mdc.snackbar.MDCSnackbar(
+    document.getElementById("improper-teacher-change-email-snackbar")
+  );
 
   var previousTeacherEmail;
 
@@ -476,6 +485,7 @@ function loggedIn(initialUser) {
         teacherChangeEmailLabel.classList.remove(
           "mdc-floating-label--float-above"
         );
+        teacherChangeRetypeInput.value = "";
       }
       if (event.target == targetUsername) {
         targetUsernameLabel.innerHTML = "Custom Call";
@@ -514,36 +524,52 @@ function loggedIn(initialUser) {
     // Edit/Save button
     var tempEmailInput = "";
     teacherChangeEmailInput.addEventListener("click", () => {
+      if (teacherChangeEmailInput.value == user.teacherEmail) {
+        teacherChangeEmailInput.value = "";
+      }
       teacherRetypeEmailInputWorkable.style.display = "flex";
       saveTeacherEmailButton.style.display = "block";
       tempEmailInput = teacherChangeEmailInput.value;
-      teacherChangeEmailInput.value = "";
+
       teacherChangeEmailLabel.innerHTML = "Teacher Email";
     });
     saveTeacherEmailButton.addEventListener(
       "click",
       () => {
         // Clicked on save
-        console.log("Uploading email:", teacherChangeEmailInput.value);
-        db.collection("Users")
-          .doc(user.email)
-          .set({
-            displayName: user.displayName,
-            email: user.email,
-            teacherEmail: teacherChangeEmailInput.value
-          })
-          .then(function() {
-            teacherChangeEmailLabel.innerHTML = "Teacher Email";
-            user.teacherEmail = teacherChangeEmailInput.value;
-            targetUsername.value = teacherChangeEmailInput.value;
-            settingsModal.click();
-            teacherChangeEmailSnackbar.open();
-            console.log(user);
-            console.log("Email Changed!!!");
-          })
-          .catch(function(error) {
-            console.error("Error changing email: ", error);
-          });
+
+        if (teacherChangeRetypeInput.value == teacherChangeEmailInput.value) {
+          // Same email
+          var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          if (regexEmail.test(teacherChangeRetypeInput.value.toLowerCase())) {
+            // valid email format
+            console.log("Uploading email:", teacherChangeEmailInput.value);
+            db.collection("Users")
+              .doc(user.email)
+              .set({
+                displayName: user.displayName,
+                email: user.email,
+                teacherEmail: teacherChangeEmailInput.value
+              })
+              .then(function() {
+                teacherChangeEmailLabel.innerHTML = "Teacher Email";
+                user.teacherEmail = teacherChangeEmailInput.value;
+                targetUsername.value = teacherChangeEmailInput.value;
+                settingsModal.click();
+                teacherChangeEmailSnackbar.open();
+                console.log(user);
+                console.log("Email Changed!!!");
+              })
+              .catch(function(error) {
+                console.error("Error changing email: ", error);
+              });
+          } else {
+            // Not valid email format
+            teacherImproperChangeEmailSnackbar.open();
+          }
+        } else {
+          teacherChangeEmailDifferentSnackbar.open();
+        }
       }
       // teacherChangeEmailInput.value = "";
     );
