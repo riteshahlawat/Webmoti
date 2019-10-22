@@ -30,12 +30,14 @@ var uiConfig = {
           if (doc.exists) {
             let data = doc.data();
             let teacherEmail = data.teacherEmail;
+            let id = firebase.auth().currentUser.uid;
             db.collection("Users")
               .doc(authResult.user.email)
               .set({
                 email: authResult.user.email,
                 teacherEmail: teacherEmail,
-                displayName: authResult.user.displayName
+                displayName: authResult.user.displayName,
+                uid: id,
               })
               .then(function() {
                 window.location.replace("index.html");

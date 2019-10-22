@@ -1,3 +1,4 @@
+var mainUser;
 // Your web app's Firebase configuration
 var firebaseConfig = {
   apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
@@ -13,17 +14,75 @@ firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 
 var loggedInElements = document.getElementById("logged-in-elements");
-
+var uid;
+var userStatusDatabaseRef;
+var isOfflineForDatabase;
+var isOnlineForDatabase;
+var userStatusFirestoreRef;
 // Check if user is authenticated
 firebase.auth().onAuthStateChanged(user => {
   if (user) {
+    // Fetch the current user's ID from Firebase Authentication.
+    uid = firebase.auth().currentUser.uid;
+    var isOfflineForDatabase = {
+      state: "offline",
+      last_changed: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    var isOnlineForDatabase = {
+      state: "online",
+      last_changed: firebase.database.ServerValue.TIMESTAMP
+    };
+    // Create a reference to this user's specific status node.
+    // This is where we will store data about being online/offline.
+    userStatusDatabaseRef = firebase.database().ref("/status/" + uid);
+    console.log("Logged in", user)
+    firebase
+      .database()
+      .ref(".info/connected")
+      .on("value", snapshot => {
+        if (snapshot.val() == false) {
+          // db.collection("Users")
+          //   .doc(user.email)
+          //   .set({
+          //     email: user.email,
+          //     teacherEmail: "testmail",
+          //     displayName: user.displayName,
+          //     status: "offline"
+          //   })
+          //   .then(() => {})
+          //   .catch(err => {
+          //     console.error("Error writing document: ", err);
+          //   });
+          return;
+        }
+
+        userStatusDatabaseRef
+          .onDisconnect()
+          .set(isOfflineForDatabase)
+          .then(() => {
+            // db.collection("Users")
+            //   .doc(user.email)
+            //   .set({
+            //     email: user.email,
+            //     teacherEmail: "testmail",
+            //     displayName: user.displayName,
+            //     status: "online"
+            //   })
+            //   .then(() => {})
+            //   .catch(err => {
+            //     console.error("Error writing document: ", err);
+            //   });
+            userStatusDatabaseRef.set(isOnlineForDatabase);
+          });
+      });
+
     db.collection("Users")
       .doc(user.email)
       .get()
       .then(doc => {
         if (doc.exists) {
           let data = doc.data();
-          console.log("Login Data: ", data);
           loggedInElements.style.display = "block";
           loggedIn(data);
         } else {
@@ -42,7 +101,55 @@ firebase.auth().onAuthStateChanged(user => {
     window.location.replace("login.html");
   }
 });
-
+window.addEventListener("beforeunload", function(e) {
+  db.collection("Users")
+    .doc(mainUser.email)
+    .set({
+      email: mainUser.email,
+      teacherEmail: mainUser.teacherEmail,
+      displayName: mainUser.displayName,
+      status: "offline"
+    })
+    .then(function() {
+      console.log("Logged On!!");
+    })
+    .catch(function(error) {
+      console.error("Error adding document: ", error);
+    });
+});
+// firebase.database().ref(".info/connected").on("value", snap => {
+//   if (snap.val() == true) {
+//     db.collection("Users")
+//       .doc(mainUser.email)
+//       .set({
+//         email: mainUser.email,
+//         teacherEmail: mainUser.teacherEmail,
+//         displayName: mainUser.displayName,
+//         status: "online"
+//       })
+//       .then(function() {
+//         console.log("Logged On!!");
+//       })
+//       .catch(function(error) {
+//         console.error("Error adding document: ", error);
+//       });
+//   } else {
+//     db.collection("Users")
+//       .doc(mainUser.email)
+//       .set({
+//         email: mainUser.email,
+//         teacherEmail: mainUser.teacherEmail,
+//         displayName: mainUser.displayName,
+//         status: "offline"
+//       })
+//       .then(function() {
+//         console.log("Logged On!!");
+//       })
+//       .catch(function(error) {
+//         console.error("Error adding document: ", error);
+//       });
+//   }
+// });
 function logOut() {
   firebase.auth().signOut();
 }
