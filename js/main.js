@@ -42,18 +42,6 @@ firebase.auth().onAuthStateChanged(user => {
       .ref(".info/connected")
       .on("value", snapshot => {
         if (snapshot.val() == false) {
-          // db.collection("Users")
-          //   .doc(user.email)
-          //   .set({
-          //     email: user.email,
-          //     teacherEmail: "testmail",
-          //     displayName: user.displayName,
-          //     status: "offline"
-          //   })
-          //   .then(() => {})
-          //   .catch(err => {
-          //     console.error("Error writing document: ", err);
-          //   });
           return;
         }
 
@@ -61,18 +49,6 @@ firebase.auth().onAuthStateChanged(user => {
           .onDisconnect()
           .set(isOfflineForDatabase)
           .then(() => {
-            // db.collection("Users")
-            //   .doc(user.email)
-            //   .set({
-            //     email: user.email,
-            //     teacherEmail: "testmail",
-            //     displayName: user.displayName,
-            //     status: "online"
-            //   })
-            //   .then(() => {})
-            //   .catch(err => {
-            //     console.error("Error writing document: ", err);
-            //   });
             userStatusDatabaseRef.set(isOnlineForDatabase);
           });
       });
@@ -595,14 +571,14 @@ function loggedIn(initialUser) {
         teacherChangeRetypeInput.value = "";
       }
       if (event.target == targetUsername) {
-        targetUsernameLabel.innerHTML = "Custom Call";
+        targetUsernameLabel.innerHTML = "Other Classroom";
       }
       if (event.target != targetUsername) {
         if (targetUsernameTextInput.value == "") {
           targetUsernameTextInput.value = user.teacherEmail;
-          targetUsernameLabel.innerHTML = "Target Username";
+          targetUsernameLabel.innerHTML = "Home Classroom";
         } else if (targetUsernameTextInput.value == user.teacherEmail) {
-          targetUsernameLabel.innerHTML = teacherUser.displayName;
+          targetUsernameLabel.innerHTML = "Home Classroom";
         }
       }
     });
