@@ -221,6 +221,29 @@ input {
   justify-content: flex-start;
   /* margin-right: 30%; */
 }
+.photo-div {
+  width: 70px;
+  height: 70px;
+  background-position: center;
+  background-size: cover;
+  border-radius: 50%;
+  background-image: url("https://www.cmcaindia.org/wp-content/uploads/2015/11/default-profile-picture-gmail-2.png");
+}
+.photo-element {
+  margin: 0;
+}
+.photo-state {
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  margin-top: 100%;
+  transform: translate(-50%, -100%);
+  margin-bottom: 5px;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgba(32, 165, 32, 0.575);
+}
 #teacher-input-retype-text-field {
   margin-top: 15px;
 }

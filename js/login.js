@@ -16,13 +16,14 @@ var db = firebase.firestore();
 // Login UI
 // Initialize the FirebaseUI Widget using Firebase.
 var ui = new firebaseui.auth.AuthUI(firebase.auth());
-
 var uiConfig = {
   callbacks: {
     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
       // User successfully signed in.
       // Return type determines whether we continue the redirect automatically
       // or whether we leave that to developer to handle.
+      var id = firebase.auth().currentUser.uid;
+      console.log(id)
       db.collection("Users")
         .doc(authResult.user.email)
         .get()
@@ -30,7 +31,6 @@ var uiConfig = {
           if (doc.exists) {
             let data = doc.data();
             let teacherEmail = data.teacherEmail;
-            let id = firebase.auth().currentUser.uid;
             db.collection("Users")
               .doc(authResult.user.email)
               .set({
@@ -38,6 +38,23 @@ var uiConfig = {
                 teacherEmail: teacherEmail,
                 displayName: authResult.user.displayName,
                 uid: id,
+                photoURL: authResult.user.photoURL
+              })
+              .then(function() {
+                window.location.replace("index.html");
+              })
+              .catch(function(error) {
+                console.error("Error adding document: ", error);
+              });
+          } else {
+            db.collection("Users")
+              .doc(authResult.user.email)
+              .set({
+                email: authResult.user.email,
+                teacherEmail: "testemail@gmail.ca",
+                displayName: authResult.user.displayName,
+                uid: id,
+                photoURL: authResult.user.photoURL
               })
               .then(function() {
                 window.location.replace("index.html");

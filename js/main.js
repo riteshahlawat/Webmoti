@@ -36,7 +36,7 @@ firebase.auth().onAuthStateChanged(user => {
     // Create a reference to this user's specific status node.
     // This is where we will store data about being online/offline.
     userStatusDatabaseRef = firebase.database().ref("/status/" + uid);
-    console.log("Logged in", user)
+    console.log("Logged in", user);
     firebase
       .database()
       .ref(".info/connected")
@@ -93,39 +93,6 @@ window.addEventListener("beforeunload", function(e) {
       console.error("Error adding document: ", error);
     });
 });
-// firebase.database().ref(".info/connected").on("value", snap => {
-//   if (snap.val() == true) {
-//     db.collection("Users")
-//       .doc(mainUser.email)
-//       .set({
-//         email: mainUser.email,
-//         teacherEmail: mainUser.teacherEmail,
-//         displayName: mainUser.displayName,
-//         status: "online"
-//       })
-//       .then(function() {
-//         console.log("Logged On!!");
-//       })
-//       .catch(function(error) {
-//         console.error("Error adding document: ", error);
-//       });
-//   } else {
-//     db.collection("Users")
-//       .doc(mainUser.email)
-//       .set({
-//         email: mainUser.email,
-//         teacherEmail: mainUser.teacherEmail,
-//         displayName: mainUser.displayName,
-//         status: "offline"
-//       })
-//       .then(function() {
-//         console.log("Logged On!!");
-//       })
-//       .catch(function(error) {
-//         console.error("Error adding document: ", error);
-//       });
-//   }
-// });
 function logOut() {
   firebase.auth().signOut();
 }
@@ -219,8 +186,17 @@ function loggedIn(initialUser) {
   const teacherImproperChangeEmailSnackbar = new mdc.snackbar.MDCSnackbar(
     document.getElementById("improper-teacher-change-email-snackbar")
   );
+  
+  // Profile photos
+  var userProfilePhoto = document.getElementById("user-photo-div");
+  var teacherProfilePhoto = document.getElementById("teacher-photo-div");
+
+  var userProfileState = document.getElementById("user-photo-state");
+  var teacherProfileState = document.getElementById("teacher-photo-state");
 
   var previousTeacherEmail;
+  var teacherState = null;
+  var teacherStateLastChanged = null;
 
   var localStream = null;
   var pc = null;
@@ -487,7 +463,8 @@ function loggedIn(initialUser) {
     let teacherEmail = user.teacherEmail;
     targetUsername.value = teacherEmail;
     usernameLabel.innerHTML = user.displayName;
-
+    userProfilePhoto.style.backgroundImage = "url('" + user.photoURL + "')";
+    userProfileState.style.backgroundColor = "#47bf39";
     db.collection("Users")
       .doc(user.teacherEmail)
       .get()
@@ -495,6 +472,21 @@ function loggedIn(initialUser) {
         if (doc.exists) {
           teacherUser = doc.data();
           targetUsernameLabel.innerHTML = teacherUser.displayName;
+          // Teacher online/offline
+          let teacherUserDatabaseRef = firebase.database().ref("/status/" + teacherUser.uid)
+            .on("value", snapshot => {
+              let tempData = snapshot.val();
+              teacherState = tempData.state;
+              teacherStateLastChanged = tempData.last_changed;
+              // Set teacher profile photo
+              teacherProfilePhoto.style.backgroundImage = "url('" + teacherUser.photoURL + "')";
+              
+              if (teacherState == "offline") {
+                teacherProfileState.style.backgroundColor = "transparent";
+              } else {
+                teacherProfileState.style.backgroundColor = "#47bf39";
+              }             
+            });
         } else {
           // Undefined
           console.log("No Such Document");
@@ -503,7 +495,9 @@ function loggedIn(initialUser) {
       .catch(err => {
         console.log("Error getting document: ", err);
       });
-
+      teacherChangeEmailInput.addEventListener("keyup", () => {
+        console.log(teacherChangeEmailInput.value);
+      })
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
