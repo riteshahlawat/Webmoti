@@ -102,15 +102,18 @@
             <h4>Change Teacher Email</h4>
           </div>
           <div id="modal-change-teacher-email">
-            <div id="teacher-input-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
-              <input type="text" id="teacher-change-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
-              <div id="teacher-change-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
-                <div class="mdc-notched-outline__leading"></div>
-                <div id="teacher-change-email-width" class="mdc-notched-outline__notch" style="">
-                  <label id="teacher-input-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Email</label>
+            <div class="teacher-input-div">
+              <div id="teacher-input-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
+                <input type="text" id="teacher-change-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+                <div id="teacher-change-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
+                  <div class="mdc-notched-outline__leading"></div>
+                  <div id="teacher-change-email-width" class="mdc-notched-outline__notch" style="">
+                    <label id="teacher-input-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Email</label>
+                  </div>
+                  <div class="mdc-notched-outline__trailing"></div>
                 </div>
-                <div class="mdc-notched-outline__trailing"></div>
               </div>
+              <div id="teacher-change-email-error" class="change-email-error"></div>
             </div>
             
             <div id="teacher-change-buttons">
@@ -119,15 +122,18 @@
                 </button>
             </div>
           </div>
-          <div id="teacher-input-retype-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
-            <input type="text" id="teacher-retype-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
-            <div id="teacher-retype-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
-              <div class="mdc-notched-outline__leading"></div>
-              <div id="teacher-retype-email-width" class="mdc-notched-outline__notch" style="">
-                <label id="teacher-input-retype-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Retype Email</label>
+          <div class="teacher-input-div">
+            <div id="teacher-input-retype-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
+              <input type="text" id="teacher-retype-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+              <div id="teacher-retype-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
+                <div class="mdc-notched-outline__leading"></div>
+                <div id="teacher-retype-email-width" class="mdc-notched-outline__notch" style="">
+                  <label id="teacher-input-retype-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Retype Email</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
               </div>
-              <div class="mdc-notched-outline__trailing"></div>
             </div>
+            <div id="teacher-change-retype-email-error" class="change-email-error"></div>
           </div>
         </div>
         <div class="modal-footer">

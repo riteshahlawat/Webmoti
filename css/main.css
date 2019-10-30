@@ -212,9 +212,20 @@ input {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-top: 15px;
   margin-bottom: 0px;
+}
+.teacher-input-div {
+  display: flex;
+  flex-direction: column;
+}
+.change-email-error {
+  color: #B00020;
+  margin-top: 3px;
+  margin-left: 5px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
 }
 #teacher-change-buttons {
   display: flex;

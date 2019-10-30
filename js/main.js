@@ -186,7 +186,12 @@ function loggedIn(initialUser) {
   const teacherImproperChangeEmailSnackbar = new mdc.snackbar.MDCSnackbar(
     document.getElementById("improper-teacher-change-email-snackbar")
   );
-  
+
+  var teacherEmailError = document.getElementById("teacher-change-email-error");
+  var teacherRetypeEmailError = document.getElementById(
+    "teacher-change-retype-email-error"
+  );
+
   // Profile photos
   var userProfilePhoto = document.getElementById("user-photo-div");
   var teacherProfilePhoto = document.getElementById("teacher-photo-div");
@@ -195,6 +200,7 @@ function loggedIn(initialUser) {
   var teacherProfileState = document.getElementById("teacher-photo-state");
 
   var previousTeacherEmail;
+  var previousTeacherProfilePicture;
   var teacherState = null;
   var teacherStateLastChanged = null;
 
@@ -465,6 +471,7 @@ function loggedIn(initialUser) {
     usernameLabel.innerHTML = user.displayName;
     userProfilePhoto.style.backgroundImage = "url('" + user.photoURL + "')";
     userProfileState.style.backgroundColor = "#47bf39";
+
     db.collection("Users")
       .doc(user.teacherEmail)
       .get()
@@ -473,19 +480,22 @@ function loggedIn(initialUser) {
           teacherUser = doc.data();
           targetUsernameLabel.innerHTML = teacherUser.displayName;
           // Teacher online/offline
-          let teacherUserDatabaseRef = firebase.database().ref("/status/" + teacherUser.uid)
+          let teacherUserDatabaseRef = firebase
+            .database()
+            .ref("/status/" + teacherUser.uid)
             .on("value", snapshot => {
               let tempData = snapshot.val();
               teacherState = tempData.state;
               teacherStateLastChanged = tempData.last_changed;
               // Set teacher profile photo
-              teacherProfilePhoto.style.backgroundImage = "url('" + teacherUser.photoURL + "')";
-              
+              teacherProfilePhoto.style.backgroundImage =
+                "url('" + teacherUser.photoURL + "')";
+
               if (teacherState == "offline") {
                 teacherProfileState.style.backgroundColor = "transparent";
               } else {
                 teacherProfileState.style.backgroundColor = "#47bf39";
-              }             
+              }
             });
         } else {
           // Undefined
@@ -495,9 +505,38 @@ function loggedIn(initialUser) {
       .catch(err => {
         console.log("Error getting document: ", err);
       });
-      teacherChangeEmailInput.addEventListener("keyup", () => {
-        console.log(teacherChangeEmailInput.value);
-      })
+    teacherChangeEmailInput.addEventListener("keyup", () => {
+      var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (regexEmail.test(teacherChangeEmailInput.value.toLowerCase())) {
+        if (teacherChangeEmailInput.value == teacherChangeRetypeInput.value) {
+          // Same email and proper format
+          teacherEmailError.innerHTML = "";
+          teacherRetypeEmailError.innerHTML = "";
+        } else {
+          // Different emails proper format
+          teacherEmailError.innerHTML = "Emails not matching";
+        }
+      } else {
+        // Improper email format and not same
+        teacherEmailError.innerHTML = "Email not proper format";
+      }
+    });
+    teacherChangeRetypeInput.addEventListener("keyup", () => {
+      var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (regexEmail.test(teacherChangeRetypeInput.value.toLowerCase())) {
+        if (teacherChangeEmailInput.value == teacherChangeRetypeInput.value) {
+          // Same email and proper format
+          teacherEmailError.innerHTML = "";
+          teacherRetypeEmailError.innerHTML = "";
+        } else {
+          // Different emails proper format
+          teacherRetypeEmailError.innerHTML = "Emails not matching";
+        }
+      } else {
+        // Improper email format
+        teacherRetypeEmailError.innerHTML = "Email not proper format";
+      }
+    });
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
@@ -510,6 +549,7 @@ function loggedIn(initialUser) {
       setTimeout(() => {
         saveTeacherEmailButton.style.display = "none";
         teacherRetypeEmailInputWorkable.style.display = "none";
+        teacherRetypeEmailError.style.display = "none";
         drawerList.selectedIndex = 0;
         drawerSettingsButton.classList.remove("mdc-list-item--activated");
         drawerHomeButton.classList.add("mdc-list-item--activated");
@@ -584,9 +624,12 @@ function loggedIn(initialUser) {
         .set({
           displayName: user.displayName,
           email: user.email,
-          teacherEmail: previousTeacherEmail
+          teacherEmail: previousTeacherEmail,
+          uid: uid,
+          photoURL: user.photoURL
         })
         .then(function() {
+          teacherProfilePhoto.style.backgroundImage = previousTeacherProfilePicture;
           teacherChangeEmailLabel.innerHTML = "Teacher Email";
           user.teacherEmail = previousTeacherEmail;
           targetUsername.value = previousTeacherEmail;
@@ -606,6 +649,7 @@ function loggedIn(initialUser) {
       }
       teacherRetypeEmailInputWorkable.style.display = "flex";
       saveTeacherEmailButton.style.display = "block";
+      teacherRetypeEmailError.style.display = "block";
       tempEmailInput = teacherChangeEmailInput.value;
 
       teacherChangeEmailLabel.innerHTML = "Teacher Email";
@@ -626,9 +670,29 @@ function loggedIn(initialUser) {
               .set({
                 displayName: user.displayName,
                 email: user.email,
-                teacherEmail: teacherChangeEmailInput.value
+                teacherEmail: teacherChangeEmailInput.value,
+                uid: uid,
+                photoURL: user.photoURL
               })
               .then(function() {
+                db.collection("Users")
+                  .doc(teacherChangeEmailInput.value)
+                  .get()
+                  .then(doc => {
+                    if (doc.exists) {
+                      teacherUser = doc.data();
+                      previousTeacherProfilePicture = teacherProfilePhoto.style.backgroundImage;
+                      teacherProfilePhoto.style.backgroundImage =
+                        "url('" + teacherUser.photoURL + "')";
+                    } else {
+                      // Undefined
+                      console.log("No Such Document");
+                      teacherProfilePhoto.style.backgroundImage = `url("https://www.cmcaindia.org/wp-content/uploads/2015/11/default-profile-picture-gmail-2.png")`;
+                    }
+                  })
+                  .catch(err => {
+                    console.log("Error getting document: ", err);
+                  });
                 teacherChangeEmailLabel.innerHTML = "Teacher Email";
                 user.teacherEmail = teacherChangeEmailInput.value;
                 targetUsername.value = teacherChangeEmailInput.value;
@@ -642,10 +706,10 @@ function loggedIn(initialUser) {
               });
           } else {
             // Not valid email format
-            teacherImproperChangeEmailSnackbar.open();
+            // teacherImproperChangeEmailSnackbar.open();
           }
         } else {
-          teacherChangeEmailDifferentSnackbar.open();
+          // teacherChangeEmailDifferentSnackbar.open();
         }
       }
       // teacherChangeEmailInput.value = "";
