@@ -209,10 +209,15 @@ function loggedIn(initialUser) {
   var isCaller = true;
   var isStudent = true;
   var mediaDetails;
+  var coolDown = false; 
+  var minuteTimer = 60;
+  var minuteTimerAct = false;
+  var urgentQuestion = false;
+  var Bell = new Audio("../audio/bell.mp3");
 
   setRandomUser(username);
   function setRandomUser(textbox) {
-    textbox.value = email;
+    textbox.value = email;  
   }
 
   initialize();
@@ -386,7 +391,7 @@ function loggedIn(initialUser) {
     );
 
     db.collection("SDP")
-      .doc(username)
+      .doc(username) 
       .set(data)
       .then(function() {
         console.log("Document written ");
@@ -447,6 +452,32 @@ function loggedIn(initialUser) {
             break;
           case "r":
             resetZoom();
+            break;
+          case "Enter":
+            if (coolDown) {
+              document.getElementsByClassName("timer-group")[0].style.display =
+                "block";
+              document.getElementsByClassName("hand")[0].classList.add("spin1");
+
+              if (!minuteTimerAct) {
+                minuteTimerAct = true;
+                onTimer();
+              }
+            }
+            if (!coolDown) {
+              if (!urgentQuestion) {
+                sendToPeer(keyName);
+                sendToPeer("");
+              }
+              if (urgentQuestion) {
+                sendToPeer("urgentQ");
+                sendToPeer("");
+              }
+              coolDown = true;
+            }
+            setTimeout(finishCooldown, 60000);
+            setTimeout(urgentCooldown, 120000);
+            urgentQuestion = true;
             break;
           default:
           // code block
@@ -681,7 +712,8 @@ function loggedIn(initialUser) {
                   .then(doc => {
                     if (doc.exists) {
                       teacherUser = doc.data();
-                      previousTeacherProfilePicture = teacherProfilePhoto.style.backgroundImage;
+                      previousTeacherProfilePicture =
+                        teacherProfilePhoto.style.backgroundImage;
                       teacherProfilePhoto.style.backgroundImage =
                         "url('" + teacherUser.photoURL + "')";
                     } else {
@@ -825,10 +857,53 @@ function loggedIn(initialUser) {
       case "q":
         socket.emit("stop");
         break;
+      case "Enter":
+        console.log("Pressed enter");
+        waveHand();
+        break;
+      case "urgentQ":
+        urgentHand();
+        break;
       default:
       // code block
     }
   }
+  // Hand functions
+  function waveHand() {
+    document.getElementById("hand").style.display = "block";
+    document.getElementById("hand").classList.add("handAnimation0");
+    setTimeout(function() {
+      document.getElementById("hand").style.display = "none";
+    }, 5000);
+  }
+  function urgentHand() {
+    document.getElementById("hand").style.display = "block";
+    document.getElementById("hand").classList.add("handAnimation1");
+    Bell.play();
+    setTimeout(function() {
+      document.getElementById("hand").style.display = "none";
+    }, 5000);
+  }
+  function finishCooldown() {
+    coolDown = false;
+    document.getElementsByClassName("timer-group")[0].style.display = "none";
+  }
+  function urgentCooldown() {
+    urgentQuestion = false;
+  }
+  function onTimer() {
+    if (minuteTimerAct) {
+      document.getElementById("timerText").innerHTML = minuteTimer.toString();
+      minuteTimer--;
+      if (minuteTimer < 0) {
+        minuteTimer = 60;
+        minuteTimerAct = false;
+      } else {
+        setTimeout(onTimer, 1000);
+      }
+    }
+  }
+
   function listenSelf() {
     console.log("Listening for changes in the entry matching our username ");
     db.collection("SDP")
