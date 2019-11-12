@@ -80,8 +80,10 @@ button {
   background-color: rgb(255, 255, 255);
 }
 .main-nav-list {
+  width: 80%;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   align-items: center;
   padding-left: 0 !important;
 }
@@ -262,9 +264,19 @@ input {
   border-radius: 50%;
   background-image: url("https://www.cmcaindia.org/wp-content/uploads/2015/11/default-profile-picture-gmail-2.png");
 }
-.photo-element {
-  margin: 0;
+.user-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
 }
+.photo-element {
+  display: flex;
+  flex-direction: row;
+  margin: 0 10px;
+  align-items: center;
+}
+
 .photo-state {
   width: 10px;
   height: 10px;

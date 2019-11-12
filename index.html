@@ -203,52 +203,54 @@
       </section>
       <nav class="main-nav" role="navigation">
         <ul class="main-nav-list">
-          <li id="user-photo-element" class="photo-element">
-            <div id="user-photo-div" class="photo-div"></div>
-            <div id="user-photo-state" class="photo-state"></div>
+          <li >
+            <div class="user-group">
+                <div id="user-photo-element" class="photo-element">
+                    <div id="user-photo-div" class="photo-div"></div>
+                    <div id="user-photo-state" class="photo-state"></div>  
+                </div>
+                <div id="usernameTextInput" class="mdc-text-field">
+                    <input
+                      disabled
+                      placeholder="Pending"
+                      id="username"
+                      type="text"
+                      class="mdc-text-field__input"
+                    />
+                    <label id="usernameLabel" class="mdc-floating-label mdc-floating-label--float-above  " for="username">Your Username</label>
+                    <div class="mdc-line-ripple"></div>
+                  </div>
+            </div>           
           </li>
-          <li>
-            <div id="usernameTextInput" class="mdc-text-field">
-              <input
-                disabled
-                placeholder="Pending"
-                id="username"
-                type="text"
-                class="mdc-text-field__input"
-              />
-              <label id="usernameLabel" class="mdc-floating-label mdc-floating-label--float-above  " for="username">Your Username</label>
-              <div class="mdc-line-ripple"></div>
-            </div>
-          </li>
-          <li id="teacher-photo-element" class="photo-element">
-              <div id="teacher-photo-div" class="photo-div"></div>
-              <div id="teacher-photo-state" class="photo-state"></div>
-            </li>
-          <li>
-            <div id="targetUsernameTextInput" class="mdc-text-field">
-                <input
-                id="targetUsername"
-                type="text"
-                class="mdc-text-field__input"
-                />
-                <label id="targetUsernameLabel" class="mdc-floating-label mdc-floating-label--float-above" for="targetUsername">Home Classroom</label>
-                <div class="mdc-line-ripple"></div>
-            </div>
-            
-              
+          <li >
+            <div class="user-group">
+                <div id="teacher-photo-element" class="photo-element">
+                    <div id="teacher-photo-div" class="photo-div"></div>
+                    <div id="teacher-photo-state" class="photo-state"></div>
+                </div>
+                <div id="targetUsernameTextInput" class="mdc-text-field">
+                    <input
+                    id="targetUsername"
+                    type="text"
+                    class="mdc-text-field__input"
+                    />
+                    <label id="targetUsernameLabel" class="mdc-floating-label mdc-floating-label--float-above" for="targetUsername">Home Classroom</label>
+                    <div class="mdc-line-ripple"></div>
+                </div>
+            </div>              
           </li>
 
           <li>
             <a
               class="mdc-button mdc-button--unelevated mdc-ripple-upgraded custom-button"
-              id="call"
+              id="call" style="background-color: #bd1206 !important; height: 50px !important;"
               ><i class="material-icons mdc-button__icon">call</i>Call</a
             >
           </li>
           <li>
             <a
               class="mdc-button mdc-button--unelevated mdc-ripple-upgraded custom-button"
-              id="hangup"
+              id="hangup" style="background-color: #08138c !important; height: 50px !important;"
               ><i class="material-icons mdc-button__icon">call_end</i>Hang Up</a
             >
           </li>
