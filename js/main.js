@@ -1,13 +1,23 @@
 var mainUser;
 // Your web app's Firebase configuration
+// var firebaseConfig = {
+//   apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
+//   authDomain: "webmotia.firebaseapp.com",
+//   databaseURL: "https://webmotia.firebaseio.com",
+//   projectId: "webmotia",
+//   storageBucket: "webmotia.appspot.com",
+//   messagingSenderId: "606747164317",
+//   appId: "1:606747164317:web:952c390708ccb09d"
+// };
 var firebaseConfig = {
-  apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
-  authDomain: "webmotia.firebaseapp.com",
-  databaseURL: "https://webmotia.firebaseio.com",
-  projectId: "webmotia",
-  storageBucket: "webmotia.appspot.com",
-  messagingSenderId: "606747164317",
-  appId: "1:606747164317:web:952c390708ccb09d"
+  apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
+  authDomain: "tempwebmoti.firebaseapp.com",
+  databaseURL: "https://tempwebmoti.firebaseio.com",
+  projectId: "tempwebmoti",
+  storageBucket: "tempwebmoti.appspot.com",
+  messagingSenderId: "640467167824",
+  appId: "1:640467167824:web:2aa34c043975558953bf55",
+  measurementId: "G-VWENQE1FSM"
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
@@ -117,7 +127,7 @@ function loggedIn(initialUser) {
   var localVideo = document.getElementById("localVideo");
   var hangupButton = document.getElementById("hangup");
   var callButton = document.getElementById("call");
-  var logoutButton = document.getElementById("drawer-logout-button");
+  var drawerLogoutButton = document.getElementById("drawer-logout-button");
 
   // drawer setup
   var drawer = mdc.drawer.MDCDrawer.attachTo(
@@ -201,6 +211,7 @@ function loggedIn(initialUser) {
 
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
+  var previousTeacherUser;
   var teacherState = null;
   var teacherStateLastChanged = null;
 
@@ -209,15 +220,17 @@ function loggedIn(initialUser) {
   var isCaller = true;
   var isStudent = true;
   var mediaDetails;
-  var coolDown = false; 
-  var minuteTimer = 60;
+  var coolDown = false;
+  var minuteTimer = 30;
   var minuteTimerAct = false;
   var urgentQuestion = false;
   var Bell = new Audio("../audio/bell.mp3");
+  var teacherUserDatabaseRef;
+  var onSettingsPage = false;
 
   setRandomUser(username);
   function setRandomUser(textbox) {
-    textbox.value = email;  
+    textbox.value = email;
   }
 
   initialize();
@@ -268,7 +281,7 @@ function loggedIn(initialUser) {
     mediaDetails = getMedia(pc);
   }
 
-  logoutButton.addEventListener("click", logOut);
+  drawerLogoutButton.addEventListener("click", logOut);
 
   hangupButton.addEventListener("click", hangup);
   function hangup() {
@@ -391,7 +404,7 @@ function loggedIn(initialUser) {
     );
 
     db.collection("SDP")
-      .doc(username) 
+      .doc(username)
       .set(data)
       .then(function() {
         console.log("Document written ");
@@ -423,65 +436,84 @@ function loggedIn(initialUser) {
       console.log(e);
     });
   }
+  // Accessibilities keydowns
+  document.addEventListener("keydown", event => {
+    let keyName = event.key;
 
+    if(keyName == "Enter") {
+      if (onSettingsPage) {
+        saveTeacherEmailButton.click();
+      }
+      else {
+        
+        if (document.activeElement == drawerLogoutButton) {
+          drawerLogoutButton.click();
+        } 
+        if (document.activeElement == drawerSettingsButton) {
+          drawerSettingsButton.click();
+        }
+      }
+    }
+  });
   function keyboardListener() {
     console.log("Adding the keyboard event listener");
     document.addEventListener(
       "keydown",
       event => {
-        const keyName = event.key;
+        if (document.activeElement == document.getElementsByTagName("BODY")[0]) {
+          const keyName = event.key;
+          switch (keyName) {
+            case "q":
+              sendToPeer(keyName);
+              sendToPeer("");
+              break;
+            case "w":
+              zoomIn();
+              break;
+            case "a":
+              sendToPeer(keyName);
+              sendToPeer("");
+              break;
+            case "s":
+              zoomOut();
+              break;
+            case "d":
+              sendToPeer(keyName);
+              sendToPeer("");
+              break;
+            case "r":
+              resetZoom();
+              break;
+            case "Enter":
+              if (coolDown) {
+                document.getElementsByClassName("timer-group")[0].style.display =
+                  "block";
+                document.getElementsByClassName("hand")[0].classList.add("spin1");
 
-        switch (keyName) {
-          case "q":
-            sendToPeer(keyName);
-            sendToPeer("");
-            break;
-          case "w":
-            zoomIn();
-            break;
-          case "a":
-            sendToPeer(keyName);
-            sendToPeer("");
-            break;
-          case "s":
-            zoomOut();
-            break;
-          case "d":
-            sendToPeer(keyName);
-            sendToPeer("");
-            break;
-          case "r":
-            resetZoom();
-            break;
-          case "Enter":
-            if (coolDown) {
-              document.getElementsByClassName("timer-group")[0].style.display =
-                "block";
-              document.getElementsByClassName("hand")[0].classList.add("spin1");
-
-              if (!minuteTimerAct) {
-                minuteTimerAct = true;
-                onTimer();
+                if (!minuteTimerAct) {
+                  minuteTimerAct = true;
+                  onTimer();
+                }
               }
-            }
-            if (!coolDown) {
-              if (!urgentQuestion) {
-                sendToPeer(keyName);
-                sendToPeer("");
+              if (!coolDown) {
+                if (!urgentQuestion) {
+                  sendToPeer(keyName);
+                  sendToPeer("");
+                }
+                if (urgentQuestion) {
+                  sendToPeer("urgentQ");
+                  sendToPeer("");
+                }
+                coolDown = true;
               }
-              if (urgentQuestion) {
-                sendToPeer("urgentQ");
-                sendToPeer("");
-              }
-              coolDown = true;
-            }
-            setTimeout(finishCooldown, 60000);
-            setTimeout(urgentCooldown, 120000);
-            urgentQuestion = true;
-            break;
-          default:
-          // code block
+              setTimeout(urgentCooldown, 60000);
+              urgentQuestion = true;
+              break;
+            default:
+            // code block
+          }
         }
+        
       },
       false
     );
@@ -496,6 +528,7 @@ function loggedIn(initialUser) {
       ""
     );
   }
+  
   function initialize() {
     let teacherEmail = user.teacherEmail;
     targetUsername.value = teacherEmail;
@@ -511,21 +544,25 @@ function loggedIn(initialUser) {
           teacherUser = doc.data();
           targetUsernameLabel.innerHTML = teacherUser.displayName;
           // Teacher online/offline
-          let teacherUserDatabaseRef = firebase
+          teacherUserDatabaseRef = firebase
             .database()
             .ref("/status/" + teacherUser.uid)
             .on("value", snapshot => {
-              let tempData = snapshot.val();
-              teacherState = tempData.state;
-              teacherStateLastChanged = tempData.last_changed;
-              // Set teacher profile photo
-              teacherProfilePhoto.style.backgroundImage =
-                "url('" + teacherUser.photoURL + "')";
-
-              if (teacherState == "offline") {
-                teacherProfileState.style.backgroundColor = "transparent";
+              if (snapshot) {
+                let tempData = snapshot.val();
+                teacherState = tempData.state;
+                teacherStateLastChanged = tempData.last_changed;
+                // Set teacher profile photo
+                teacherProfilePhoto.style.backgroundImage =
+                  "url('" + teacherUser.photoURL + "')";
+  
+                if (teacherState == "offline") {
+                  teacherProfileState.style.backgroundColor = "transparent";
+                } else {
+                  teacherProfileState.style.backgroundColor = "#47bf39";
+                }
               } else {
-                teacherProfileState.style.backgroundColor = "#47bf39";
+                teacherProfileState.style.backgroundColor = "transparent";
               }
             });
         } else {
@@ -578,6 +615,7 @@ function loggedIn(initialUser) {
       // it is in a timeout because of conflict css transitions which solves
       //the problem
       setTimeout(() => {
+        onSettingsPage = true;
         saveTeacherEmailButton.style.display = "none";
         teacherRetypeEmailInputWorkable.style.display = "none";
         teacherRetypeEmailError.style.display = "none";
@@ -622,6 +660,7 @@ function loggedIn(initialUser) {
 
     window.addEventListener("click", event => {
       if (event.target == settingsModal) {
+        onSettingsPage = false;
         settingsModal.style.display = "none";
         // Reset teacher email editing
         teacherChangeEmailInput.value = user.teacherEmail;
@@ -660,11 +699,29 @@ function loggedIn(initialUser) {
           photoURL: user.photoURL
         })
         .then(function() {
+          teacherUser = previousTeacherUser;
           teacherProfilePhoto.style.backgroundImage = previousTeacherProfilePicture;
           teacherChangeEmailLabel.innerHTML = "Teacher Email";
           user.teacherEmail = previousTeacherEmail;
           targetUsername.value = previousTeacherEmail;
           teacherChangeEmailSnackbar.close();
+          teacherUserDatabaseRef = firebase
+            .database()
+            .ref("/status/" + teacherUser.uid)
+            .on("value", snapshot => {
+              let tempData = snapshot.val();
+              teacherState = tempData.state;
+              teacherStateLastChanged = tempData.last_changed;
+              // Set teacher profile photo
+              teacherProfilePhoto.style.backgroundImage =
+                "url('" + teacherUser.photoURL + "')";
+
+              if (teacherState == "offline") {
+                teacherProfileState.style.backgroundColor = "transparent";
+              } else {
+                teacherProfileState.style.backgroundColor = "#47bf39";
+              }
+            });
           console.log("Undid Change");
         })
         .catch(function(error) {
@@ -710,12 +767,34 @@ function loggedIn(initialUser) {
                   .doc(teacherChangeEmailInput.value)
                   .get()
                   .then(doc => {
+                    previousTeacherProfilePicture =
+                      teacherProfilePhoto.style.backgroundImage;
                     if (doc.exists) {
+                      previousTeacherUser = teacherUser;
                       teacherUser = doc.data();
-                      previousTeacherProfilePicture =
-                        teacherProfilePhoto.style.backgroundImage;
                       teacherProfilePhoto.style.backgroundImage =
                         "url('" + teacherUser.photoURL + "')";
+                        teacherUserDatabaseRef = firebase
+                        .database()
+                        .ref("/status/" + teacherUser.uid)
+                        .on("value", snapshot => {
+                          if (snapshot) {
+                            let tempData = snapshot.val();
+                            teacherState = tempData.state;
+                            teacherStateLastChanged = tempData.last_changed;
+                            // Set teacher profile photo
+                            teacherProfilePhoto.style.backgroundImage =
+                              "url('" + teacherUser.photoURL + "')";
+              
+                            if (teacherState == "offline") {
+                              teacherProfileState.style.backgroundColor = "transparent";
+                            } else {
+                              teacherProfileState.style.backgroundColor = "#47bf39";
+                            }
+                          } else {
+                            teacherProfileState.style.backgroundColor = "transparent";
+                          }
+                        });
                     } else {
                       // Undefined
                       console.log("No Such Document");
@@ -896,8 +975,11 @@ function loggedIn(initialUser) {
       document.getElementById("timerText").innerHTML = minuteTimer.toString();
       minuteTimer--;
       if (minuteTimer < 0) {
-        minuteTimer = 60;
+        minuteTimer = 30;
         minuteTimerAct = false;
+        coolDown = false;
+        document.getElementsByClassName("timer-group")[0].style.display =
+          "none";
       } else {
         setTimeout(onTimer, 1000);
       }

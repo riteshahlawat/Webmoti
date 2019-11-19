@@ -116,6 +116,12 @@ input {
   font-family: "Roboto", sans-serif;
   font-size: 20px;
 }
+.custom-button:focus {
+  border-radius: 2px;
+  border-color: rgb(70, 70, 70);
+  border-style: solid;
+  border-radius: 5px;
+}
 
 .stage {
   margin-top: 20px;
@@ -465,7 +471,7 @@ input {
 }
 
 .timer.minute .hand span {
-  animation-duration: 60s;
+  animation-duration: 30s;
   border-top-color: rgba(0, 255, 255, 0.4);
   border-right-color: rgba(0, 255, 255, 0.4);
   border-width: 175px;
