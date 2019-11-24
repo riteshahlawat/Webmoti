@@ -1,22 +1,22 @@
-// var firebaseConfig = {
-//   apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
-//   authDomain: "webmotia.firebaseapp.com",
-//   databaseURL: "https://webmotia.firebaseio.com",
-//   projectId: "webmotia",
-//   storageBucket: "webmotia.appspot.com",
-//   messagingSenderId: "606747164317",
-//   appId: "1:606747164317:web:952c390708ccb09d"
-// };
 var firebaseConfig = {
-  apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
-  authDomain: "tempwebmoti.firebaseapp.com",
-  databaseURL: "https://tempwebmoti.firebaseio.com",
-  projectId: "tempwebmoti",
-  storageBucket: "tempwebmoti.appspot.com",
-  messagingSenderId: "640467167824",
-  appId: "1:640467167824:web:2aa34c043975558953bf55",
-  measurementId: "G-VWENQE1FSM"
+  apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
+  authDomain: "webmotia.firebaseapp.com",
+  databaseURL: "https://webmotia.firebaseio.com",
+  projectId: "webmotia",
+  storageBucket: "webmotia.appspot.com",
+  messagingSenderId: "606747164317",
+  appId: "1:606747164317:web:952c390708ccb09d"
 };
+// var firebaseConfig = {
+//   apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
+//   authDomain: "tempwebmoti.firebaseapp.com",
+//   databaseURL: "https://tempwebmoti.firebaseio.com",
+//   projectId: "tempwebmoti",
+//   storageBucket: "tempwebmoti.appspot.com",
+//   messagingSenderId: "640467167824",
+//   appId: "1:640467167824:web:2aa34c043975558953bf55",
+//   measurementId: "G-VWENQE1FSM"
+// };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
@@ -41,7 +41,8 @@ var uiConfig = {
           if (doc.exists) {
             let data = doc.data();
             let teacherEmail = data.teacherEmail;
-            // let isTeacher = data.isTeacher;
+            let isTeacher = data.isTeacher;
+            let status = data.status;
             db.collection("Users")
               .doc(authResult.user.email)
               .set({
@@ -50,6 +51,7 @@ var uiConfig = {
                 displayName: authResult.user.displayName,
                 uid: id,
                 photoURL: authResult.user.photoURL,
+                isTeacher: isTeacher
                 
               })
               .then(function() {
@@ -67,6 +69,7 @@ var uiConfig = {
                 displayName: authResult.user.displayName,
                 uid: id,
                 photoURL: authResult.user.photoURL,
+                isTeacher: "False"
                 
               })
               .then(function() {

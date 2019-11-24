@@ -1,24 +1,24 @@
 var mainUser;
 // Your web app's Firebase configuration
-// var firebaseConfig = {
-//   apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
-//   authDomain: "webmotia.firebaseapp.com",
-//   databaseURL: "https://webmotia.firebaseio.com",
-//   projectId: "webmotia",
-//   storageBucket: "webmotia.appspot.com",
-//   messagingSenderId: "606747164317",
-//   appId: "1:606747164317:web:952c390708ccb09d"
-// };
 var firebaseConfig = {
-  apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
-  authDomain: "tempwebmoti.firebaseapp.com",
-  databaseURL: "https://tempwebmoti.firebaseio.com",
-  projectId: "tempwebmoti",
-  storageBucket: "tempwebmoti.appspot.com",
-  messagingSenderId: "640467167824",
-  appId: "1:640467167824:web:2aa34c043975558953bf55",
-  measurementId: "G-VWENQE1FSM"
+  apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
+  authDomain: "webmotia.firebaseapp.com",
+  databaseURL: "https://webmotia.firebaseio.com",
+  projectId: "webmotia",
+  storageBucket: "webmotia.appspot.com",
+  messagingSenderId: "606747164317",
+  appId: "1:606747164317:web:952c390708ccb09d"
 };
+// var firebaseConfig = {
+//   apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
+//   authDomain: "tempwebmoti.firebaseapp.com",
+//   databaseURL: "https://tempwebmoti.firebaseio.com",
+//   projectId: "tempwebmoti",
+//   storageBucket: "tempwebmoti.appspot.com",
+//   messagingSenderId: "640467167824",
+//   appId: "1:640467167824:web:2aa34c043975558953bf55",
+//   measurementId: "G-VWENQE1FSM"
+// };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
@@ -94,7 +94,9 @@ window.addEventListener("beforeunload", function(e) {
       email: mainUser.email,
       teacherEmail: mainUser.teacherEmail,
       displayName: mainUser.displayName,
-      status: "offline"
+      uid: mainUser.uid,
+      photoURL: mainUser.photoURL,
+      isTeacher: mainUser.isTeacher
     })
     .then(function() {
       console.log("Logged On!!");
@@ -440,18 +442,23 @@ function loggedIn(initialUser) {
   document.addEventListener("keydown", event => {
     let keyName = event.key;
 
-    if(keyName == "Enter") {
+    if (keyName == "Enter") {
       if (onSettingsPage) {
         saveTeacherEmailButton.click();
-      }
-      else {
-        
+      } else {
         if (document.activeElement == drawerLogoutButton) {
           drawerLogoutButton.click();
-        } 
-        if (document.activeElement == drawerSettingsButton) {
+        } else if (document.activeElement == drawerSettingsButton) {
           drawerSettingsButton.click();
+        } else if (document.activeElement == callButton) {
+          callButton.click();
+        } else if (document.activeElement == hangupButton) {
+          hangupButton.click();
         }
+      }
+    } else if (keyName == "Escape") {
+      if (onSettingsPage) {
+        settingsModal.click();
       }
     }
   });
@@ -460,7 +467,9 @@ function loggedIn(initialUser) {
     document.addEventListener(
       "keydown",
       event => {
-        if (document.activeElement == document.getElementsByTagName("BODY")[0]) {
+        if (
+          document.activeElement == document.getElementsByTagName("BODY")[0]
+        ) {
           const keyName = event.key;
           switch (keyName) {
             case "q":
@@ -486,9 +495,12 @@ function loggedIn(initialUser) {
               break;
             case "Enter":
               if (coolDown) {
-                document.getElementsByClassName("timer-group")[0].style.display =
-                  "block";
-                document.getElementsByClassName("hand")[0].classList.add("spin1");
+                document.getElementsByClassName(
+                  "timer-group"
+                )[0].style.display = "block";
+                document
+                  .getElementsByClassName("hand")[0]
+                  .classList.add("spin1");
 
                 if (!minuteTimerAct) {
                   minuteTimerAct = true;
@@ -513,7 +525,6 @@ function loggedIn(initialUser) {
             // code block
           }
         }
-        
       },
       false
     );
@@ -528,7 +539,7 @@ function loggedIn(initialUser) {
       ""
     );
   }
-  
+
   function initialize() {
     let teacherEmail = user.teacherEmail;
     targetUsername.value = teacherEmail;
@@ -555,7 +566,7 @@ function loggedIn(initialUser) {
                 // Set teacher profile photo
                 teacherProfilePhoto.style.backgroundImage =
                   "url('" + teacherUser.photoURL + "')";
-  
+
                 if (teacherState == "offline") {
                   teacherProfileState.style.backgroundColor = "transparent";
                 } else {
@@ -632,6 +643,11 @@ function loggedIn(initialUser) {
         );
         teacherEmailChangeWidth.style.width = "85.4px";
         previousTeacherEmail = targetUsername.value;
+        // Set tab index's
+        drawerOpenButton.tabIndex = "-1";
+        targetUsername.tabIndex = "-1";
+        callButton.tabIndex = "-1";
+        hangupButton.tabIndex = "-1";
       }, 5);
     });
 
@@ -660,6 +676,12 @@ function loggedIn(initialUser) {
 
     window.addEventListener("click", event => {
       if (event.target == settingsModal) {
+        // Set tab index's
+        drawerOpenButton.tabIndex = "1";
+        targetUsername.tabIndex = "2";
+        callButton.tabIndex = "3";
+        hangupButton.tabIndex = "4";
+
         onSettingsPage = false;
         settingsModal.style.display = "none";
         // Reset teacher email editing
@@ -696,7 +718,8 @@ function loggedIn(initialUser) {
           email: user.email,
           teacherEmail: previousTeacherEmail,
           uid: uid,
-          photoURL: user.photoURL
+          photoURL: user.photoURL,
+          isTeacher: user.isTeacher
         })
         .then(function() {
           teacherUser = previousTeacherUser;
@@ -732,6 +755,12 @@ function loggedIn(initialUser) {
     // Edit/Save button
     var tempEmailInput = "";
     teacherChangeEmailInput.addEventListener("click", () => {
+      teacherChangeEmailInputClick();
+    });
+    teacherChangeEmailInput.addEventListener("focus", () => {
+      teacherChangeEmailInputClick();
+    });
+    function teacherChangeEmailInputClick() {
       if (teacherChangeEmailInput.value == user.teacherEmail) {
         teacherChangeEmailInput.value = "";
       }
@@ -741,7 +770,7 @@ function loggedIn(initialUser) {
       tempEmailInput = teacherChangeEmailInput.value;
 
       teacherChangeEmailLabel.innerHTML = "Teacher Email";
-    });
+    }
     saveTeacherEmailButton.addEventListener(
       "click",
       () => {
@@ -760,13 +789,15 @@ function loggedIn(initialUser) {
                 email: user.email,
                 teacherEmail: teacherChangeEmailInput.value,
                 uid: uid,
-                photoURL: user.photoURL
+                photoURL: user.photoURL,
+                isTeacher: user.isTeacher
               })
               .then(function() {
                 db.collection("Users")
                   .doc(teacherChangeEmailInput.value)
                   .get()
                   .then(doc => {
+                    console.log(teacherChangeEmailInput.value);
                     previousTeacherProfilePicture =
                       teacherProfilePhoto.style.backgroundImage;
                     if (doc.exists) {
@@ -774,7 +805,7 @@ function loggedIn(initialUser) {
                       teacherUser = doc.data();
                       teacherProfilePhoto.style.backgroundImage =
                         "url('" + teacherUser.photoURL + "')";
-                        teacherUserDatabaseRef = firebase
+                      teacherUserDatabaseRef = firebase
                         .database()
                         .ref("/status/" + teacherUser.uid)
                         .on("value", snapshot => {
@@ -785,14 +816,17 @@ function loggedIn(initialUser) {
                             // Set teacher profile photo
                             teacherProfilePhoto.style.backgroundImage =
                               "url('" + teacherUser.photoURL + "')";
-              
+
                             if (teacherState == "offline") {
-                              teacherProfileState.style.backgroundColor = "transparent";
+                              teacherProfileState.style.backgroundColor =
+                                "transparent";
                             } else {
-                              teacherProfileState.style.backgroundColor = "#47bf39";
+                              teacherProfileState.style.backgroundColor =
+                                "#47bf39";
                             }
                           } else {
-                            teacherProfileState.style.backgroundColor = "transparent";
+                            teacherProfileState.style.backgroundColor =
+                              "transparent";
                           }
                         });
                     } else {
@@ -937,7 +971,6 @@ function loggedIn(initialUser) {
         socket.emit("stop");
         break;
       case "Enter":
-        console.log("Pressed enter");
         waveHand();
         break;
       case "urgentQ":
