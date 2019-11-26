@@ -12,7 +12,7 @@
       href="https://fonts.googleapis.com/css?family=Roboto&display=swap"
       rel="stylesheet"
     />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,200,300&display=swap" rel="stylesheet">
     <!-- CSS  -->
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -72,7 +72,7 @@
           </div>
         </div>
       </div>
-      <div style="display: none;" id="myModal" class="modal">
+      <div style="display: none;" id="settings-modal" class="modal">
         <div id="improper-teacher-change-email-snackbar" class="mdc-snackbar">
           <div class="mdc-snackbar__surface" style="background-color: #B00020 !important;">
             <div class="mdc-snackbar__actions">
@@ -98,42 +98,79 @@
           <span class="close">&times;</span>
         </div>
         <div class="modal-body">
-          <div id="modal-change-teacher-email-text">
-            <h4>Change Teacher Email</h4>
+          <div id="settings-tabs">
+            <div id="settings-email-tab" class="settings-tab settings-tab-selected">
+              <p class="settings-tab-text">
+                Email Settings
+              </p>
+            </div>
+            <div id="settings-teacher-tab" class="settings-tab">
+              <p class="settings-tab-text">
+                Teacher Settings
+              </p>
+            </div>
           </div>
-          <div id="modal-change-teacher-email">
+          <div id="email-settings-body" class="modal-body-post-tabs">
+            <div id="modal-change-teacher-email-text">
+              <h4>Change Target Email</h4>
+            </div>
+            <div id="modal-change-teacher-email">
+              <div class="teacher-input-div">
+                <div id="teacher-input-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
+                  <input type="text" id="teacher-change-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+                  <div id="teacher-change-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div id="teacher-change-email-width" class="mdc-notched-outline__notch" style="">
+                      <label id="teacher-input-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Email</label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                  </div>
+                </div>
+                <div id="teacher-change-email-error" class="change-email-error"></div>
+              </div>
+              
+              <div id="teacher-change-buttons">
+                  <button id="edit-teacher-email-button" class="demo-button mdc-button mdc-button--outlined mdc-ripple-upgraded">
+                    <span id="edit-teacher-email-span" class="mdc-button__label">save</span>
+                  </button>
+              </div>
+            </div>
             <div class="teacher-input-div">
-              <div id="teacher-input-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
-                <input type="text" id="teacher-change-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
-                <div id="teacher-change-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
+              <div id="teacher-input-retype-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
+                <input type="text" id="teacher-retype-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+                <div id="teacher-retype-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
                   <div class="mdc-notched-outline__leading"></div>
-                  <div id="teacher-change-email-width" class="mdc-notched-outline__notch" style="">
-                    <label id="teacher-input-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Email</label>
+                  <div id="teacher-retype-email-width" class="mdc-notched-outline__notch" style="">
+                    <label id="teacher-input-retype-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Retype Email</label>
                   </div>
                   <div class="mdc-notched-outline__trailing"></div>
                 </div>
               </div>
-              <div id="teacher-change-email-error" class="change-email-error"></div>
-            </div>
-            
-            <div id="teacher-change-buttons">
-                <button id="edit-teacher-email-button" class="demo-button mdc-button mdc-button--outlined mdc-ripple-upgraded">
-                  <span id="edit-teacher-email-span" class="mdc-button__label">save</span>
-                </button>
+              <div id="teacher-change-retype-email-error" class="change-email-error"></div>
             </div>
           </div>
-          <div class="teacher-input-div">
-            <div id="teacher-input-retype-text-field" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
-              <input type="text" id="teacher-retype-email-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
-              <div id="teacher-retype-email-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
-                <div class="mdc-notched-outline__leading"></div>
-                <div id="teacher-retype-email-width" class="mdc-notched-outline__notch" style="">
-                  <label id="teacher-input-retype-label-field" class="mdc-floating-label" for="text-field-outlined-shape-one" style="">Retype Email</label>
+          <div id="teacher-settings-body" class="modal-body-post-tabs" style="display: none;">
+            <label id="is-teacher-switch-label" class="pure-material-switch">
+              <input id="is-teacher-switch" type="checkbox">
+              <span id="is-teacher-switch-text">Are you a teacher?</span>
+            </label>
+            <div id="set-student-div">
+              <p id="set-student-div-text">Set Student Timer Time</p>
+              <div id="set-student-time-group" class="teacher-input-div">
+                <div id="set-student-time-input-text-fields" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined">
+                  <input maxlength="2" type="text" id="set-student-input" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+                  <div id="set-student-notch" class="mdc-notched-outline mdc-notched-outline--upgraded">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__trailing"></div>
+                  </div>
                 </div>
-                <div class="mdc-notched-outline__trailing"></div>
+                <div id="teacher-change-semail-error" class="change-email-error"></div>
               </div>
+              <button id="set-student-time-save-button" disabled class="demo-button mdc-button mdc-button--outlined mdc-ripple-upgraded">
+                  <span id="set-student-time-save-text" class="mdc-button__label">save</span>
+              </button>
             </div>
-            <div id="teacher-change-retype-email-error" class="change-email-error"></div>
+            
           </div>
         </div>
         <div class="modal-footer">
@@ -236,7 +273,7 @@
                     type="text"
                     class="mdc-text-field__input"
                     />
-                    <label id="targetUsernameLabel" class="mdc-floating-label mdc-floating-label--float-above" for="targetUsername">Home Classroom</label>
+                    <label id="targetUsernameLabel" class="mdc-floating-label mdc-floating-label--float-above" for="targetUsername"></label>
                     <div class="mdc-line-ripple"></div>
                 </div>
             </div>              
@@ -265,8 +302,8 @@
       <div id='hand'></div>
       <div class="timer-group">
         <div class="timer minute">
-          <div class="hand"><span></span></div>
-          <div class="hand"><span></span></div>
+          <div class="hand"><span class="hand-span"></span></div>
+          <div class="hand"><span class="hand-span"></span></div>
         </div>
         <div class="face">
           <h2 id="timerText">Please wait </h2>

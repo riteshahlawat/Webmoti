@@ -43,6 +43,7 @@ var uiConfig = {
             let teacherEmail = data.teacherEmail;
             let isTeacher = data.isTeacher;
             let status = data.status;
+            let studentTime = data.studentTime;
             db.collection("Users")
               .doc(authResult.user.email)
               .set({
@@ -51,8 +52,8 @@ var uiConfig = {
                 displayName: authResult.user.displayName,
                 uid: id,
                 photoURL: authResult.user.photoURL,
-                isTeacher: isTeacher
-                
+                isTeacher: isTeacher,
+                studentTime: studentTime
               })
               .then(function() {
                 window.location.replace("index.html");
@@ -69,8 +70,8 @@ var uiConfig = {
                 displayName: authResult.user.displayName,
                 uid: id,
                 photoURL: authResult.user.photoURL,
-                isTeacher: "False"
-                
+                isTeacher: "False",
+                studentTime: 30
               })
               .then(function() {
                 window.location.replace("index.html");

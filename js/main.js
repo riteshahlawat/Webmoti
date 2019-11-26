@@ -96,7 +96,8 @@ window.addEventListener("beforeunload", function(e) {
       displayName: mainUser.displayName,
       uid: mainUser.uid,
       photoURL: mainUser.photoURL,
-      isTeacher: mainUser.isTeacher
+      isTeacher: mainUser.isTeacher,
+      studentTime: mainUser.studentTime
     })
     .then(function() {
       console.log("Logged On!!");
@@ -151,11 +152,15 @@ function loggedIn(initialUser) {
   var drawerOpenButton = document.getElementById("drawer-open-button");
 
   // settgings modal
-  var settingsModal = document.getElementById("myModal");
+  var settingsModal = document.getElementById("settings-modal");
   var settingsSpan = document.getElementsByClassName("close")[0];
   const teacherChangeEmailTextInput = new mdc.textField.MDCTextField(
     document.querySelector("#teacher-input-text-field")
   );
+  var setStudentTimeTextInput = new mdc.textField.MDCTextField(
+    document.getElementById("set-student-time-input-text-fields")
+  );
+
   var teacherInputTextField = document.getElementById(
     "teacher-input-text-field"
   );
@@ -200,9 +205,12 @@ function loggedIn(initialUser) {
   );
 
   var teacherEmailError = document.getElementById("teacher-change-email-error");
+
   var teacherRetypeEmailError = document.getElementById(
     "teacher-change-retype-email-error"
   );
+
+  var isTeacherSwitch = document.getElementById("is-teacher-switch");
 
   // Profile photos
   var userProfilePhoto = document.getElementById("user-photo-div");
@@ -210,6 +218,18 @@ function loggedIn(initialUser) {
 
   var userProfileState = document.getElementById("user-photo-state");
   var teacherProfileState = document.getElementById("teacher-photo-state");
+
+  // Settings tabs
+  var settingsTeacherBody = document.getElementById("teacher-settings-body");
+  var settingsEmailBody = document.getElementById("email-settings-body");
+
+  var settingsEmailTab = document.getElementById("settings-email-tab");
+  var settingsTeacherTab = document.getElementById("settings-teacher-tab");
+
+  var setStudentTimeInput = document.getElementById("set-student-input");
+  var setStudentSaveButton = document.getElementById(
+    "set-student-time-save-button"
+  );
 
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
@@ -223,13 +243,15 @@ function loggedIn(initialUser) {
   var isStudent = true;
   var mediaDetails;
   var coolDown = false;
-  var minuteTimer = 30;
+  var minuteTimer;
   var minuteTimerAct = false;
   var urgentQuestion = false;
   var Bell = new Audio("../audio/bell.mp3");
   var teacherUserDatabaseRef;
   var onSettingsPage = false;
-
+  var targetUsernameLabelMainText;
+  var targetUsernameLabelSelectedText;
+  var currentSettingsTab = "email";
   setRandomUser(username);
   function setRandomUser(textbox) {
     textbox.value = email;
@@ -539,21 +561,149 @@ function loggedIn(initialUser) {
       ""
     );
   }
+  // Settings tab on clicks
+  settingsEmailTab.addEventListener("click", () => {
+    if (currentSettingsTab != "email") {
+      currentSettingsTab = "email";
+      settingsTeacherTab.classList.remove("settings-tab-selected");
+      settingsEmailTab.classList.add("settings-tab-selected");
+
+      settingsEmailBody.style.display = "flex";
+      settingsTeacherBody.style.display = "none";
+    }
+  });
+  settingsTeacherTab.addEventListener("click", () => {
+    if (currentSettingsTab != "teacher") {
+      currentSettingsTab = "teacher";
+      settingsTeacherTab.classList.add("settings-tab-selected");
+      settingsEmailTab.classList.remove("settings-tab-selected");
+
+      settingsEmailBody.style.display = "none";
+      settingsTeacherBody.style.display = "flex";
+    }
+  });
+  isTeacherSwitch.addEventListener("click", () => {
+    let tempTeacher;
+    if (isTeacherSwitch.checked) {
+      tempTeacher = "True";
+    } else {
+      tempTeacher = "False";
+    }
+
+    db.collection("Users")
+      .doc(user.email)
+      .set({
+        displayName: user.displayName,
+        email: user.email,
+        teacherEmail: previousTeacherEmail,
+        uid: uid,
+        photoURL: user.photoURL,
+        isTeacher: tempTeacher,
+        studentTime: user.studentTime
+      })
+      .then(function() {
+        user.isTeacher = tempTeacher;
+        if (user.isTeacher == "False") {
+          targetUsernameLabelMainText = "Home Classroom";
+          targetUsernameLabelSelectedText = "Other Classroom";
+          setStudentSaveButton.disabled = true;
+          setStudentTimeInput.disabled = true;
+          // Disable following inputs
+        } else if (user.isTeacher == "True") {
+          targetUsernameLabelMainText = "Student Email";
+          targetUsernameLabelSelectedText = "Other Email";
+          setStudentSaveButton.disabled = false;
+          setStudentTimeInput.disabled = false;
+          // Enable following
+        } else {
+          targetUsernameLabelMainText = "N/A";
+          targetUsernameLabelSelectedText = "N/A";
+        }
+      })
+      .catch(function(error) {
+        console.error("Error changing email: ", error);
+      });
+  });
+  setStudentSaveButton.addEventListener("click", () => {
+    if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
+      db.collection("Users")
+        .doc(teacherUser.email)
+        .set({
+          displayName: teacherUser.displayName,
+          email: teacherUser.email,
+          teacherEmail: teacherUser.teacherEmail,
+          uid: teacherUser.uid,
+          photoURL: teacherUser.photoURL,
+          isTeacher: teacherUser.isTeacher,
+          studentTime: setStudentTimeInput.value
+        })
+        .then(function() {
+          teacherUser.studentTime = setStudentTimeInput.value;
+          document.querySelectorAll(".hand-span").forEach(element => {
+            element.style.animationDuration = setStudentTimeInput.value + "s";
+          });
+          document.querySelector(".minute").style.animationDuration =
+            setStudentTimeInput.value + "s";
+          settingsModal.click();
+        })
+        .catch(function(error) {
+          console.error("Error changing email: ", error);
+        });
+    }
+  });
 
   function initialize() {
     let teacherEmail = user.teacherEmail;
+    minuteTimer = user.studentTime;
+    document.querySelectorAll(".hand-span").forEach(element => {
+      element.style.animationDuration = user.studentTime.toString(10) + "s";
+    });
+    document.querySelector(".minute").style.animationDuration =
+      user.studentTime.toString(10) + "s";
+    db.collection("Users")
+      .doc(user.email)
+      .onSnapshot(doc => {
+        let data = doc.data();
+        if (user.studentTime != data.studentTime) {
+          user.studentTime = data.studentTime;
+          minuteTimer = user.studentTime;
+          document.querySelectorAll(".hand-span").forEach(element => {
+            element.style.animationDuration =
+              user.studentTime.toString(10) + "s";
+          });
+          document.querySelector(".minute").style.animationDuration =
+            user.studentTime.toString(10) + "s";
+        }
+      });
     targetUsername.value = teacherEmail;
     usernameLabel.innerHTML = user.displayName;
     userProfilePhoto.style.backgroundImage = "url('" + user.photoURL + "')";
     userProfileState.style.backgroundColor = "#47bf39";
+    // Target Label Set
+    if (user.isTeacher == "False") {
+      targetUsernameLabelMainText = "Home Classroom";
+      targetUsernameLabelSelectedText = "Other Classroom";
 
+      isTeacherSwitch.checked = false;
+      setStudentSaveButton.disabled = true;
+      setStudentTimeInput.disabled = true;
+    } else if (user.isTeacher == "True") {
+      targetUsernameLabelMainText = "Student Email";
+      targetUsernameLabelSelectedText = "Other Email";
+      isTeacherSwitch.checked = true;
+      setStudentSaveButton.disabled = false;
+      setStudentTimeInput.disabled = false;
+    } else {
+      targetUsernameLabelMainText = "N/A";
+      targetUsernameLabelSelectedText = "N/A";
+    }
+    targetUsernameLabel.innerHTML = targetUsernameLabelMainText;
     db.collection("Users")
       .doc(user.teacherEmail)
       .get()
       .then(doc => {
         if (doc.exists) {
           teacherUser = doc.data();
-          targetUsernameLabel.innerHTML = teacherUser.displayName;
           // Teacher online/offline
           teacherUserDatabaseRef = firebase
             .database()
@@ -636,12 +786,12 @@ function loggedIn(initialUser) {
         settingsModal.style.display = "flex";
         // Initial teacher email change input setup
         teacherChangeEmailInput.value = user.teacherEmail;
-        teacherChangeEmailLabel.innerHTML = "Teacher Email";
+        teacherChangeEmailLabel.innerHTML = "Target Email";
         teacherEmailChangeNotch.classList.add("mdc-notched-outline--notched");
         teacherChangeEmailLabel.classList.add(
           "mdc-floating-label--float-above"
         );
-        teacherEmailChangeWidth.style.width = "85.4px";
+        teacherEmailChangeWidth.style.width = "77.5px";
         previousTeacherEmail = targetUsername.value;
         // Set tab index's
         drawerOpenButton.tabIndex = "-1";
@@ -697,14 +847,14 @@ function loggedIn(initialUser) {
         teacherChangeRetypeInput.value = "";
       }
       if (event.target == targetUsername) {
-        targetUsernameLabel.innerHTML = "Other Classroom";
+        targetUsernameLabel.innerHTML = targetUsernameLabelSelectedText;
       }
       if (event.target != targetUsername) {
         if (targetUsernameTextInput.value == "") {
           targetUsernameTextInput.value = user.teacherEmail;
-          targetUsernameLabel.innerHTML = "Home Classroom";
+          targetUsernameLabel.innerHTML = targetUsernameLabelMainText;
         } else if (targetUsernameTextInput.value == user.teacherEmail) {
-          targetUsernameLabel.innerHTML = "Home Classroom";
+          targetUsernameLabel.innerHTML = targetUsernameLabelMainText;
         }
       }
     });
@@ -719,12 +869,13 @@ function loggedIn(initialUser) {
           teacherEmail: previousTeacherEmail,
           uid: uid,
           photoURL: user.photoURL,
-          isTeacher: user.isTeacher
+          isTeacher: user.isTeacher,
+          studentTime: user.studentTime
         })
         .then(function() {
           teacherUser = previousTeacherUser;
           teacherProfilePhoto.style.backgroundImage = previousTeacherProfilePicture;
-          teacherChangeEmailLabel.innerHTML = "Teacher Email";
+          teacherChangeEmailLabel.innerHTML = "Target Email";
           user.teacherEmail = previousTeacherEmail;
           targetUsername.value = previousTeacherEmail;
           teacherChangeEmailSnackbar.close();
@@ -769,7 +920,7 @@ function loggedIn(initialUser) {
       teacherRetypeEmailError.style.display = "block";
       tempEmailInput = teacherChangeEmailInput.value;
 
-      teacherChangeEmailLabel.innerHTML = "Teacher Email";
+      teacherChangeEmailLabel.innerHTML = "Target Email";
     }
     saveTeacherEmailButton.addEventListener(
       "click",
@@ -790,7 +941,8 @@ function loggedIn(initialUser) {
                 teacherEmail: teacherChangeEmailInput.value,
                 uid: uid,
                 photoURL: user.photoURL,
-                isTeacher: user.isTeacher
+                isTeacher: user.isTeacher,
+                studentTime: user.studentTime
               })
               .then(function() {
                 db.collection("Users")
@@ -838,7 +990,7 @@ function loggedIn(initialUser) {
                   .catch(err => {
                     console.log("Error getting document: ", err);
                   });
-                teacherChangeEmailLabel.innerHTML = "Teacher Email";
+                teacherChangeEmailLabel.innerHTML = "Target Email";
                 user.teacherEmail = teacherChangeEmailInput.value;
                 targetUsername.value = teacherChangeEmailInput.value;
                 settingsModal.click();
@@ -1006,9 +1158,10 @@ function loggedIn(initialUser) {
   function onTimer() {
     if (minuteTimerAct) {
       document.getElementById("timerText").innerHTML = minuteTimer.toString();
+
       minuteTimer--;
       if (minuteTimer < 0) {
-        minuteTimer = 30;
+        minuteTimer = user.studentTime;
         minuteTimerAct = false;
         coolDown = false;
         document.getElementsByClassName("timer-group")[0].style.display =
