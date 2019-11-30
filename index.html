@@ -99,16 +99,16 @@
         </div>
         <div class="modal-body">
           <div id="settings-tabs">
-            <div id="settings-email-tab" class="settings-tab settings-tab-selected">
+            <div tabindex="5" id="settings-email-tab" class="settings-tab settings-tab-selected">
               <p class="settings-tab-text">
                 Email Settings
               </p>
-            </div>
-            <div id="settings-teacher-tab" class="settings-tab">
+            </div tabindex="5">
+            <div tabindex="6" id="settings-teacher-tab" class="settings-tab">
               <p class="settings-tab-text">
-                Teacher Settings
+                Time Settings
               </p>
-            </div>
+            </div tabindex="6">
           </div>
           <div id="email-settings-body" class="modal-body-post-tabs">
             <div id="modal-change-teacher-email-text">
@@ -150,10 +150,6 @@
             </div>
           </div>
           <div id="teacher-settings-body" class="modal-body-post-tabs" style="display: none;">
-            <label id="is-teacher-switch-label" class="pure-material-switch">
-              <input id="is-teacher-switch" type="checkbox">
-              <span id="is-teacher-switch-text">Are you a teacher?</span>
-            </label>
             <div id="set-student-div">
               <p id="set-student-div-text">Set Student Timer Time</p>
               <div id="set-student-time-group" class="teacher-input-div">
@@ -164,13 +160,12 @@
                     <div class="mdc-notched-outline__trailing"></div>
                   </div>
                 </div>
-                <div id="teacher-change-semail-error" class="change-email-error"></div>
               </div>
               <button id="set-student-time-save-button" disabled class="demo-button mdc-button mdc-button--outlined mdc-ripple-upgraded">
                   <span id="set-student-time-save-text" class="mdc-button__label">save</span>
               </button>
             </div>
-            
+            <div id="set-student-error" class="set-time-error"></div>
           </div>
         </div>
         <div class="modal-footer">

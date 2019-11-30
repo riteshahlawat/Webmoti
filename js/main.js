@@ -210,7 +210,6 @@ function loggedIn(initialUser) {
     "teacher-change-retype-email-error"
   );
 
-  var isTeacherSwitch = document.getElementById("is-teacher-switch");
 
   // Profile photos
   var userProfilePhoto = document.getElementById("user-photo-div");
@@ -220,16 +219,17 @@ function loggedIn(initialUser) {
   var teacherProfileState = document.getElementById("teacher-photo-state");
 
   // Settings tabs
-  var settingsTeacherBody = document.getElementById("teacher-settings-body");
+  var settingsTimeBody = document.getElementById("teacher-settings-body");
   var settingsEmailBody = document.getElementById("email-settings-body");
 
   var settingsEmailTab = document.getElementById("settings-email-tab");
-  var settingsTeacherTab = document.getElementById("settings-teacher-tab");
+  var settingsTimeTab = document.getElementById("settings-teacher-tab");
 
   var setStudentTimeInput = document.getElementById("set-student-input");
   var setStudentSaveButton = document.getElementById(
     "set-student-time-save-button"
   );
+  var setStudentError = document.getElementById("set-student-error");
 
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
@@ -466,7 +466,15 @@ function loggedIn(initialUser) {
 
     if (keyName == "Enter") {
       if (onSettingsPage) {
-        saveTeacherEmailButton.click();
+        if (document.activeElement == settingsTimeTab) {
+          settingsTimeTab.click();
+        } else if (document.activeElement == settingsEmailTab) {
+          settingsEmailTab.click();
+        } else if (settingsEmailBody.style.display == "flex") {
+          saveTeacherEmailButton.click();
+        } else if (settingsTimeBody.style.display == "flex") {
+          setStudentSaveButton.click();
+        }
       } else {
         if (document.activeElement == drawerLogoutButton) {
           drawerLogoutButton.click();
@@ -565,64 +573,22 @@ function loggedIn(initialUser) {
   settingsEmailTab.addEventListener("click", () => {
     if (currentSettingsTab != "email") {
       currentSettingsTab = "email";
-      settingsTeacherTab.classList.remove("settings-tab-selected");
+      settingsTimeTab.classList.remove("settings-tab-selected");
       settingsEmailTab.classList.add("settings-tab-selected");
 
       settingsEmailBody.style.display = "flex";
-      settingsTeacherBody.style.display = "none";
+      settingsTimeBody.style.display = "none";
     }
   });
-  settingsTeacherTab.addEventListener("click", () => {
+  settingsTimeTab.addEventListener("click", () => {
     if (currentSettingsTab != "teacher") {
       currentSettingsTab = "teacher";
-      settingsTeacherTab.classList.add("settings-tab-selected");
+      settingsTimeTab.classList.add("settings-tab-selected");
       settingsEmailTab.classList.remove("settings-tab-selected");
 
       settingsEmailBody.style.display = "none";
-      settingsTeacherBody.style.display = "flex";
+      settingsTimeBody.style.display = "flex";
     }
-  });
-  isTeacherSwitch.addEventListener("click", () => {
-    let tempTeacher;
-    if (isTeacherSwitch.checked) {
-      tempTeacher = "True";
-    } else {
-      tempTeacher = "False";
-    }
-
-    db.collection("Users")
-      .doc(user.email)
-      .set({
-        displayName: user.displayName,
-        email: user.email,
-        teacherEmail: previousTeacherEmail,
-        uid: uid,
-        photoURL: user.photoURL,
-        isTeacher: tempTeacher,
-        studentTime: user.studentTime
-      })
-      .then(function() {
-        user.isTeacher = tempTeacher;
-        if (user.isTeacher == "False") {
-          targetUsernameLabelMainText = "Home Classroom";
-          targetUsernameLabelSelectedText = "Other Classroom";
-          setStudentSaveButton.disabled = true;
-          setStudentTimeInput.disabled = true;
-          // Disable following inputs
-        } else if (user.isTeacher == "True") {
-          targetUsernameLabelMainText = "Student Email";
-          targetUsernameLabelSelectedText = "Other Email";
-          setStudentSaveButton.disabled = false;
-          setStudentTimeInput.disabled = false;
-          // Enable following
-        } else {
-          targetUsernameLabelMainText = "N/A";
-          targetUsernameLabelSelectedText = "N/A";
-        }
-      })
-      .catch(function(error) {
-        console.error("Error changing email: ", error);
-      });
   });
   setStudentSaveButton.addEventListener("click", () => {
     if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
@@ -651,7 +617,13 @@ function loggedIn(initialUser) {
         });
     }
   });
-
+  setStudentTimeInput.addEventListener("keyup", () => {
+    if (setStudentTimeInput.value < 10 || setStudentTimeInput.value > 60) {
+      setStudentError.innerHTML = "Please Enter A Value Between 10-60";
+    } else {
+      setStudentError.innerHTML = "";
+    }
+  });
   function initialize() {
     let teacherEmail = user.teacherEmail;
     minuteTimer = user.studentTime;
@@ -684,13 +656,11 @@ function loggedIn(initialUser) {
       targetUsernameLabelMainText = "Home Classroom";
       targetUsernameLabelSelectedText = "Other Classroom";
 
-      isTeacherSwitch.checked = false;
       setStudentSaveButton.disabled = true;
       setStudentTimeInput.disabled = true;
     } else if (user.isTeacher == "True") {
       targetUsernameLabelMainText = "Student Email";
       targetUsernameLabelSelectedText = "Other Email";
-      isTeacherSwitch.checked = true;
       setStudentSaveButton.disabled = false;
       setStudentTimeInput.disabled = false;
     } else {
@@ -798,6 +768,9 @@ function loggedIn(initialUser) {
         targetUsername.tabIndex = "-1";
         callButton.tabIndex = "-1";
         hangupButton.tabIndex = "-1";
+
+        settingsEmailTab.tabIndex = "5";
+        settingsTimeTab.tabInded = "6";
       }, 5);
     });
 
@@ -831,6 +804,13 @@ function loggedIn(initialUser) {
         targetUsername.tabIndex = "2";
         callButton.tabIndex = "3";
         hangupButton.tabIndex = "4";
+
+        settingsEmailTab.tabIndex = "-1";
+        settingsTimeTab.tabIndex = "-1";
+
+        teacherEmailError.innerHTML = "";
+        teacherRetypeEmailError.innerHTML = "";
+        setStudentError.innerHTML = "";
 
         onSettingsPage = false;
         settingsModal.style.display = "none";
@@ -1157,7 +1137,7 @@ function loggedIn(initialUser) {
   }
   function onTimer() {
     if (minuteTimerAct) {
-      document.getElementById("timerText").innerHTML = minuteTimer.toString();
+      document.getElementById("timerText").innerHTML = "Try Again In " + minuteTimer.toString();
 
       minuteTimer--;
       if (minuteTimer < 0) {
