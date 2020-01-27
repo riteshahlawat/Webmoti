@@ -619,7 +619,7 @@ function loggedIn(initialUser) {
   });
   setStudentTimeInput.addEventListener("keyup", () => {
     if (setStudentTimeInput.value < 10 || setStudentTimeInput.value > 60) {
-      setStudentError.innerHTML = "Please Enter A Value Between 10-60";
+      setStudentError.innerHTML = "Please enter a value between 10-60";
     } else {
       setStudentError.innerHTML = "";
     }
