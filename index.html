@@ -72,6 +72,13 @@
           </div>
         </div>
       </div>
+      <div style="display: none;" id="calendar-modal" class="calendar-modal">
+        <div style="background-color: red; width: 500px; height: 500px;">
+
+        </div>
+      </div>
+
+      </div>
       <div style="display: none;" id="settings-modal" class="modal">
         <div id="improper-teacher-change-email-snackbar" class="mdc-snackbar">
           <div class="mdc-snackbar__surface" style="background-color: #B00020 !important;">
@@ -89,6 +96,7 @@
             </div>
           </div>
         </div>
+      
       <!-- Modal content -->
       <div class="modal-content">
         <div class="modal-header">
@@ -290,7 +298,14 @@
               ><i class="material-icons mdc-button__icon">call_end</i>Hang Up</a
             >
           </li>
-          
+          <li>
+            <div id="calendar-widget">
+              <i class="material-icons" style="user-select: none;">
+                calendar_today
+                </i>
+            </div>
+
+          </li>
           
         </ul>
       </nav>

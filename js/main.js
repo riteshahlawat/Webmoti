@@ -231,6 +231,9 @@ function loggedIn(initialUser) {
   );
   var setStudentError = document.getElementById("set-student-error");
 
+  // Calendar
+  var calendarWidget = document.getElementById("calendar-widget");
+
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
   var previousTeacherUser;
@@ -624,6 +627,12 @@ function loggedIn(initialUser) {
       setStudentError.innerHTML = "";
     }
   });
+
+  // Calendar
+  calendarWidget.addEventListener("click", () => {
+    console.log("Clicked");
+  })
+
   function initialize() {
     let teacherEmail = user.teacherEmail;
     minuteTimer = user.studentTime;
