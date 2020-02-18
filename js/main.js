@@ -233,6 +233,16 @@ function loggedIn(initialUser) {
 
   // Calendar
   var calendarWidget = document.getElementById("calendar-widget");
+  var calendarElement = document.getElementById("calendar");
+  var calendarModal = document.getElementById("calendar-modal");
+  var calendar;
+  var calendarHeader;
+  var calendarHeaderViewSelectorButtons;
+  var calendarTodayButton;
+  var calendarPreviousButton;
+  var calendarNextButton;
+  var dayButton;
+  var weekButton;   
 
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
@@ -627,13 +637,64 @@ function loggedIn(initialUser) {
       setStudentError.innerHTML = "";
     }
   });
-
   // Calendar
   calendarWidget.addEventListener("click", () => {
-    console.log("Clicked");
-  })
+    calendarModal.style.display = "flex";
+    calendar.render();
+    postCalendarLoad();
+  });
+  // Called after every calender render to render our own custom stuff to customize calendar
+  function postCalendarLoad() {
+    // initialize
+    calendarHeader = calendarElement.childNodes[0];
+    calendarHeaderViewSelectorButtons = calendarHeader.querySelector(".fc-right");
+    dayButton = calendarHeaderViewSelectorButtons.querySelector(".fc-timeGridDay-button");
+    weekButton = calendarHeaderViewSelectorButtons.querySelector(".fc-timeGridWeek-button");
+    calendarTodayButton = calendarHeader.querySelector(".fc-today-button");
+    calendarPreviousButton = calendarHeader.querySelector(".fc-prev-button");
+    calendarNextButton = calendarHeader.querySelector(".fc-next-button");
+
+    // Customization
+    dayButton.innerHTML = "<i class=\"material-icons calendar-icon\">today</i>" + "<p>Day</p>";   
+    dayButton.classList.add("calendar-button-theme");
+
+    weekButton.innerHTML = "<i class=\"material-icons calendar-icon\">view_week</i>" + "<p>Week</p>";
+    weekButton.classList.add("calendar-button-theme");
+
+    calendarTodayButton.innerHTML = "<i class=\"material-icons calendar-icon\">calendar_today</i>" + "<p>Today</p>";
+    calendarTodayButton.classList.add("calendar-button-theme");
+    
+    calendarNextButton.classList.add("calendar-button-theme");
+
+    calendarPreviousButton.classList.add("calendar-button-theme");
+
+  }
 
   function initialize() {
+    // Calendar
+    // calendarModal.style.display = "none";
+    calendar = new FullCalendar.Calendar(calendarElement, {
+      plugins: ["timeGrid"],
+      defaultView: "timeGridDay",
+      nowIndicator: true,
+      weekends: false,
+      header: {
+        left: 'prev,next, today',
+        center: 'title', 
+        right: 'timeGridDay, timeGridWeek'
+      },
+      events: [
+        {
+          title: "Temp",
+          allDay: false,
+          start: "2020-02-04T12:00:00",
+          end: "2020-02-04T16:00:00",
+        }
+      ]
+    });
+
+    calendar.render();
+
     let teacherEmail = user.teacherEmail;
     minuteTimer = user.studentTime;
     document.querySelectorAll(".hand-span").forEach(element => {
@@ -807,6 +868,7 @@ function loggedIn(initialUser) {
     });
 
     window.addEventListener("click", event => {
+
       if (event.target == settingsModal) {
         // Set tab index's
         drawerOpenButton.tabIndex = "1";
@@ -834,6 +896,10 @@ function loggedIn(initialUser) {
           "mdc-floating-label--float-above"
         );
         teacherChangeRetypeInput.value = "";
+      }
+      if (event.target == calendarModal) {
+        // Calendar
+        calendarModal.style.display = "none";
       }
       if (event.target == targetUsername) {
         targetUsernameLabel.innerHTML = targetUsernameLabelSelectedText;
