@@ -62,9 +62,9 @@ firebase.auth().onAuthStateChanged(user => {
             userStatusDatabaseRef.set(isOnlineForDatabase);
           });
       });
-
+      console.log(user.studentTime);
     db.collection("Users")
-      .doc(user.email)
+      .doc("riteshahlawat1@gmail.com")
       .get()
       .then(doc => {
         if (doc.exists) {
@@ -262,6 +262,7 @@ function loggedIn(initialUser) {
   var Bell = new Audio("../audio/bell.mp3");
   var teacherUserDatabaseRef;
   var onSettingsPage = false;
+  var onCalendarPage = false;
   var targetUsernameLabelMainText;
   var targetUsernameLabelSelectedText;
   var currentSettingsTab = "email";
@@ -502,6 +503,9 @@ function loggedIn(initialUser) {
     } else if (keyName == "Escape") {
       if (onSettingsPage) {
         settingsModal.click();
+      } else if (onCalendarPage) {
+        calendarModal.style.display = "none";
+        onCalendarPage = false;
       }
     }
   });
@@ -640,6 +644,7 @@ function loggedIn(initialUser) {
   // Calendar
   calendarWidget.addEventListener("click", () => {
     calendarModal.style.display = "flex";
+    onCalendarPage = true;
     calendar.render();
     postCalendarLoad();
   });
@@ -854,6 +859,7 @@ function loggedIn(initialUser) {
         drawer.open = false;
       } else {
         drawer.open = true;
+        drawerHomeButton.tabIndex = "0";
       }
     });
 
@@ -900,6 +906,7 @@ function loggedIn(initialUser) {
       if (event.target == calendarModal) {
         // Calendar
         calendarModal.style.display = "none";
+        onCalendarPage = false;
       }
       if (event.target == targetUsername) {
         targetUsernameLabel.innerHTML = targetUsernameLabelSelectedText;

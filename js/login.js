@@ -5,7 +5,16 @@ var firebaseConfig = {
   projectId: "webmotia",
   storageBucket: "webmotia.appspot.com",
   messagingSenderId: "606747164317",
-  appId: "1:606747164317:web:952c390708ccb09d"
+  appId: "1:606747164317:web:952c390708ccb09d",
+  scopes: [
+    "email",
+    "profile",
+    "https://www.googleapis.com/auth/calendar.events"
+  ],
+  discoveryDocs: [
+    "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"
+  ],
+  clientId: "1053696254964-r66l5j9ll5p8rt5gukocqo5qpseds8q0.apps.googleusercontent.com"
 };
 // var firebaseConfig = {
 //   apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
@@ -33,7 +42,7 @@ var uiConfig = {
       // Return type determines whether we continue the redirect automatically
       // or whether we leave that to developer to handle.
       var id = firebase.auth().currentUser.uid;
-      console.log(id)
+      console.log(id);
       db.collection("Users")
         .doc(authResult.user.email)
         .get()
@@ -71,7 +80,7 @@ var uiConfig = {
                 uid: id,
                 photoURL: authResult.user.photoURL,
                 isTeacher: "False",
-                studentTime: 30
+                studentTime: "30"
               })
               .then(function() {
                 window.location.replace("index.html");
@@ -98,7 +107,10 @@ var uiConfig = {
   signInSuccessUrl: "index.html",
   signInOptions: [
     // Leave the lines as is for the providers you want to offer your users.
-    firebase.auth.GoogleAuthProvider.PROVIDER_ID
+    {
+      provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      scopes: firebaseConfig.scopes
+    }
     // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
     // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
     // firebase.auth.GithubAuthProvider.PROVIDER_ID,

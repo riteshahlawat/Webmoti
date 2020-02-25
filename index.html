@@ -339,7 +339,15 @@
         <video id="localVideo" autoplay="true" muted="true"></video>
       </div>
       <div id="stage"></div>
-      
+      <div id="calendarDisplay">
+        <p>Google Calendar</p>
+
+        <!--Add buttons to initiate auth sequence and sign out-->
+        <button id="authorize_button" style="display: none;">Authorize</button>
+        <button id="signout_button" style="display: none;">Sign Out</button>
+
+        <pre id="content" style="white-space: pre-wrap;"></pre>
+      </div>
         
     </div>
     <div id="loggedOutElements"></div>
@@ -351,6 +359,12 @@
     <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-database.js"></script>
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="js/calendar.js"></script>
     <script src="js/main.js"></script>
+    <script defer src="https://apis.google.com/js/api.js"
+            onload="this.onload=function(){};handleClientLoad()"
+            onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+    
   </body>
 </html>
