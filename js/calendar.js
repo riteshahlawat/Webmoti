@@ -79,7 +79,7 @@ function handleSignoutClick(event) {
  * the authorized user's calendar. If no events are found an
  * appropriate message is printed.
  */
-// Not used here
+// Not used here 
 function listUpcomingEvents() {
   gapi.client.calendar.events.list({
     'calendarId': 'primary',
