@@ -655,7 +655,7 @@ function loggedIn(initialUser) {
     } else {
       setStudentError.innerHTML = "";
     }
-  });
+  }); 
   // Calendar
   calendarWidget.addEventListener("click", () => {
     calendarModal.style.display = "flex";
