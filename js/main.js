@@ -108,6 +108,7 @@ window.addEventListener("beforeunload", function(e) {
 });
 function logOut() {
   firebase.auth().signOut();
+  // gapi.auth2.getAuthInstance().signOut();
 }
 
 // Runs once logged in
@@ -243,6 +244,20 @@ function loggedIn(initialUser) {
   var calendarNextButton;
   var dayButton;
   var weekButton;   
+  var events = null;
+  var calendarColors = {
+    1: "#7986cb",
+    2: "#33b679",
+    3: "#8e24aa",
+    4: "#e67c73",
+    5: "#f6c026",
+    6: "#f5511d",
+    7: "#039be5",
+    8: "#616161",
+    9: "#3f51b5",
+    10: "#0b8043",
+    11: "#d60000"
+  }
 
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
@@ -647,9 +662,56 @@ function loggedIn(initialUser) {
     onCalendarPage = true;
     calendar.render();
     postCalendarLoad();
+    
+    
   });
   // Called after every calender render to render our own custom stuff to customize calendar
   function postCalendarLoad() {
+    // Get events once and load them
+    if (events == null) {
+      gapi.client.calendar.events.list({
+        'calendarId': 'primary',
+        'timeMin': (new Date("04 September 2019 00:00 UTC")).toISOString(),
+        'showDeleted': false,
+        'singleEvents': true,
+        'maxResults': 250,
+        'orderBy': 'startTime'
+      }).then(function(response) {
+        events = response.result.items;
+        for (let i = 0; i < events.length; i++) {
+          // console.log(events[i].colorId);
+          // Not all day events
+          if (events[i].start.dateTime) {
+            // Temp color
+            let tempColor = calendarColors[events[i].colorId];
+            if(tempColor == null) {
+              tempColor = calendarColors[1];
+            }
+            calendar.addEvent({
+              title: events[i].summary,
+              allDay: false,
+              start: events[i].start.dateTime,
+              end: events[i].end.dateTime,
+              backgroundColor: tempColor
+            });
+          } else {
+            // All day events
+            // Temp color
+            let tempColor = calendarColors[events[i].colorId];
+            if(tempColor == null) {
+              tempColor = calendarColors[1];
+            }
+            calendar.addEvent({
+              title: events[i].summary,
+              allDay: true,
+              start: events[i].start.date,
+              end: events[i].end.date,
+              backgroundColor: tempColor
+            })
+          }
+        }
+      });
+    }
     // initialize
     calendarHeader = calendarElement.childNodes[0];
     calendarHeaderViewSelectorButtons = calendarHeader.querySelector(".fc-right");
@@ -687,15 +749,7 @@ function loggedIn(initialUser) {
         left: 'prev,next, today',
         center: 'title', 
         right: 'timeGridDay, timeGridWeek'
-      },
-      events: [
-        {
-          title: "Temp",
-          allDay: false,
-          start: "2020-02-04T12:00:00",
-          end: "2020-02-04T16:00:00",
-        }
-      ]
+      }
     });
 
     calendar.render();

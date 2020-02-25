@@ -1,4 +1,3 @@
-console.log("CalendarFunction");
 // Client ID and API key from the Developer Console
 var CLIENT_ID = "1053696254964-r66l5j9ll5p8rt5gukocqo5qpseds8q0.apps.googleusercontent.com";
 var API_KEY = "AIzaSyCfJk9eRLfxozjdfbv7tJv-CkpP7Wmf05g";
@@ -52,7 +51,7 @@ function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
     authorizeButton.style.display = 'none';
     signoutButton.style.display = 'block';
-    listUpcomingEvents();
+    // listUpcomingEvents();
   } else {
     authorizeButton.style.display = 'block';
     signoutButton.style.display = 'none';
@@ -73,47 +72,24 @@ function handleSignoutClick(event) {
   gapi.auth2.getAuthInstance().signOut();
 }
 
-/**
- * Append a pre element to the body containing the given message
- * as its text node. Used to display the results of the API call.
- *
- * @param {string} message Text to be placed in pre element.
- */
-function appendPre(message) {
-  var pre = document.getElementById('content');
-  var textContent = document.createTextNode(message + '\n');
-  pre.appendChild(textContent);
-}
+
 
 /**
  * Print the summary and start datetime/date of the next ten events in
  * the authorized user's calendar. If no events are found an
  * appropriate message is printed.
  */
+// Not used here
 function listUpcomingEvents() {
   gapi.client.calendar.events.list({
     'calendarId': 'primary',
-    'timeMin': (new Date()).toISOString(),
+    'timeMin': (new Date("04 September 2019 00:00 UTC")).toISOString(),
     'showDeleted': false,
     'singleEvents': true,
-    'maxResults': 10,
+    'maxResults': 250,
     'orderBy': 'startTime'
   }).then(function(response) {
-    var events = response.result.items;
-    appendPre('Upcoming events:');
-
-    if (events.length > 0) {
-      for (i = 0; i < events.length; i++) {
-        var event = events[i];
-        var when = event.start.dateTime;
-        if (!when) {
-          when = event.start.date;
-        }
-        appendPre(event.summary + ' (' + when + ')')
-      }
-    } else {
-      appendPre('No upcoming events found.');
-    }
+    events = response.result.items;
   });
 }
 
