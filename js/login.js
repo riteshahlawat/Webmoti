@@ -6,7 +6,7 @@ var firebaseConfig = {
   storageBucket: "webmotia.appspot.com",
   messagingSenderId: "606747164317",
   appId: "1:606747164317:web:952c390708ccb09d",
-  scopes: [
+  scopes: [ 
     "email",
     "profile",
     "https://www.googleapis.com/auth/calendar.events"
