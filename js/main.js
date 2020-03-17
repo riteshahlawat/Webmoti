@@ -62,9 +62,9 @@ firebase.auth().onAuthStateChanged(user => {
             userStatusDatabaseRef.set(isOnlineForDatabase);
           });
       });
-      console.log(user.studentTime);
+    console.log(user.studentTime);
     db.collection("Users")
-      .doc("riteshahlawat1@gmail.com")
+      .doc(user.email)
       .get()
       .then(doc => {
         if (doc.exists) {
@@ -87,25 +87,7 @@ firebase.auth().onAuthStateChanged(user => {
     window.location.replace("login.html");
   }
 });
-window.addEventListener("beforeunload", function(e) {
-  db.collection("Users")
-    .doc(mainUser.email)
-    .set({
-      email: mainUser.email,
-      teacherEmail: mainUser.teacherEmail,
-      displayName: mainUser.displayName,
-      uid: mainUser.uid,
-      photoURL: mainUser.photoURL,
-      isTeacher: mainUser.isTeacher,
-      studentTime: mainUser.studentTime
-    })
-    .then(function() {
-      console.log("Logged On!!");
-    })
-    .catch(function(error) {
-      console.error("Error adding document: ", error);
-    });
-});
+
 function logOut() {
   firebase.auth().signOut();
   // gapi.auth2.getAuthInstance().signOut();
@@ -211,6 +193,25 @@ function loggedIn(initialUser) {
     "teacher-change-retype-email-error"
   );
 
+  // Notifications settings
+  var beforeStartCheckbox = document.getElementById("before-start-checkbox");
+  var beforeEndCheckbox = document.getElementById("before-end-checkbox");
+
+  var setNotifRangeInputFields = new mdc.textField.MDCTextField(
+    document.getElementById("set-notification-range-input-fields")
+  );
+  var setNotifFrequencyInputFields = new mdc.textField.MDCTextField(
+    document.getElementById("set-notification-frequency-input-fields")
+  );
+
+  var setNotifRangeInput = document.getElementById("set-notification-range");
+  var setNotifFrequencyInput = document.getElementById(
+    "set-notification-frequency"
+  );
+
+  var saveNotifSettingsButton = document.getElementById(
+    "notification-setting-save-button"
+  );
 
   // Profile photos
   var userProfilePhoto = document.getElementById("user-photo-div");
@@ -222,9 +223,13 @@ function loggedIn(initialUser) {
   // Settings tabs
   var settingsTimeBody = document.getElementById("teacher-settings-body");
   var settingsEmailBody = document.getElementById("email-settings-body");
+  var settingsNotifBody = document.getElementById(
+    "notifications-settings-body"
+  );
 
   var settingsEmailTab = document.getElementById("settings-email-tab");
   var settingsTimeTab = document.getElementById("settings-teacher-tab");
+  var settingsNotifTab = document.getElementById("settings-notif-tab");
 
   var setStudentTimeInput = document.getElementById("set-student-input");
   var setStudentSaveButton = document.getElementById(
@@ -243,7 +248,7 @@ function loggedIn(initialUser) {
   var calendarPreviousButton;
   var calendarNextButton;
   var dayButton;
-  var weekButton;   
+  var weekButton;
   var events = null;
   var calendarColors = {
     1: "#7986cb",
@@ -257,7 +262,7 @@ function loggedIn(initialUser) {
     9: "#3f51b5",
     10: "#0b8043",
     11: "#d60000"
-  }
+  };
 
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
@@ -496,13 +501,19 @@ function loggedIn(initialUser) {
     if (keyName == "Enter") {
       if (onSettingsPage) {
         if (document.activeElement == settingsTimeTab) {
-          settingsTimeTab.click();
+          if (settingsEmailBody.style.display == "flex") {
+            saveTeacherEmailButton.click();
+          } else {
+            settingsTimeTab.click();
+          }
         } else if (document.activeElement == settingsEmailTab) {
-          settingsEmailTab.click();
-        } else if (settingsEmailBody.style.display == "flex") {
-          saveTeacherEmailButton.click();
-        } else if (settingsTimeBody.style.display == "flex") {
-          setStudentSaveButton.click();
+          if (settingsTimeBody.style.display == "flex") {
+            setStudentSaveButton.click();
+          } else {
+            settingsEmailTab.click();
+          }
+        } else if (document.activeElement == settingsNotifTab) {
+          settingsNotifTab.click();
         }
       } else {
         if (document.activeElement == drawerLogoutButton) {
@@ -606,22 +617,78 @@ function loggedIn(initialUser) {
     if (currentSettingsTab != "email") {
       currentSettingsTab = "email";
       settingsTimeTab.classList.remove("settings-tab-selected");
+      settingsNotifTab.classList.remove("settings-tab-selected");
       settingsEmailTab.classList.add("settings-tab-selected");
 
       settingsEmailBody.style.display = "flex";
       settingsTimeBody.style.display = "none";
+      settingsNotifBody.style.display = "none";
     }
   });
   settingsTimeTab.addEventListener("click", () => {
     if (currentSettingsTab != "teacher") {
       currentSettingsTab = "teacher";
       settingsTimeTab.classList.add("settings-tab-selected");
+      settingsNotifTab.classList.remove("settings-tab-selected");
       settingsEmailTab.classList.remove("settings-tab-selected");
 
       settingsEmailBody.style.display = "none";
+      settingsNotifBody.style.display = "none";
       settingsTimeBody.style.display = "flex";
     }
   });
+
+  settingsNotifTab.addEventListener("click", () => {
+    if (currentSettingsTab != "notification") {
+      currentSettingsTab = "notification";
+      settingsNotifTab.classList.add("settings-tab-selected");
+      settingsTimeTab.classList.remove("settings-tab-selected");
+      settingsEmailTab.classList.remove("settings-tab-selected");
+
+      settingsEmailBody.style.display = "none";
+      settingsTimeBody.style.display = "none";
+      settingsNotifBody.style.display = "flex";
+    }
+  });
+
+  saveNotifSettingsButton.addEventListener("click", () => {
+    let freqVal = setNotifFrequencyInput.value;
+    let rangeVal = setNotifRangeInput.value;
+    if (freqVal >= 1 && freqVal <= 5 && rangeVal >= 1 && rangeVal <= 15) {
+      // Valid, now update documents
+      let startNotif = beforeStartCheckbox.checked;
+      let endNotif = beforeEndCheckbox.checked;
+      let startUpload = "False";
+      let endUpload = "False";
+      if (startNotif) startUpload = "True";
+      if (endNotif) endUpload = "True";
+      db.collection("Users")
+        .doc(user.email)
+        .set({
+          displayName: user.displayName,
+          email: user.email,
+          teacherEmail: teacherChangeEmailInput.value,
+          uid: uid,
+          photoURL: user.photoURL,
+          isTeacher: user.isTeacher,
+          studentTime: user.studentTime,
+          beforeClassStartNotification: startUpload,
+          beforeClassEndNotification: endUpload,
+          notificationFrequency: freqVal,
+          notificationRange: rangeVal
+        })
+        .then(function() {
+          user.beforeClassEndNotification = startUpload;
+          user.beforeClassEndNotification = endUpload;
+          user.notificationFrequency = freqVal;
+          user.notificationRange = rangeVal;
+        })
+        .catch(function(error) {
+          console.error("Error changing email: ", error);
+        });
+    }
+  });
+
   setStudentSaveButton.addEventListener("click", () => {
     if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
       db.collection("Users")
@@ -633,7 +700,12 @@ function loggedIn(initialUser) {
           uid: teacherUser.uid,
           photoURL: teacherUser.photoURL,
           isTeacher: teacherUser.isTeacher,
-          studentTime: setStudentTimeInput.value
+          studentTime: setStudentTimeInput.value,
+          beforeClassStartNotification:
+            teacherUser.beforeClassStartNotification,
+          beforeClassEndNotification: teacherUser.beforeClassEndNotification,
+          notificationFrequency: teacherUser.notificationFrequency,
+          notificationRange: teacherUser.notificationRange
         })
         .then(function() {
           teacherUser.studentTime = setStudentTimeInput.value;
@@ -655,86 +727,95 @@ function loggedIn(initialUser) {
     } else {
       setStudentError.innerHTML = "";
     }
-  }); 
+  });
   // Calendar
   calendarWidget.addEventListener("click", () => {
     calendarModal.style.display = "flex";
     onCalendarPage = true;
     calendar.render();
     postCalendarLoad();
-    
-    
   });
   // Called after every calender render to render our own custom stuff to customize calendar
   function postCalendarLoad() {
     // Get events once and load them
     if (events == null) {
-      gapi.client.calendar.events.list({
-        'calendarId': 'primary',
-        'timeMin': (new Date("04 September 2019 00:00 UTC")).toISOString(),
-        'showDeleted': false,
-        'singleEvents': true,
-        'maxResults': 250,
-        'orderBy': 'startTime'
-      }).then(function(response) {
-        events = response.result.items;
-        for (let i = 0; i < events.length; i++) {
-          // console.log(events[i].colorId);
-          // Not all day events
-          if (events[i].start.dateTime) {
-            // Temp color
-            let tempColor = calendarColors[events[i].colorId];
-            if(tempColor == null) {
-              tempColor = calendarColors[1];
+      gapi.client.calendar.events
+        .list({
+          calendarId: "primary",
+          timeMin: new Date("04 September 2019 00:00 UTC").toISOString(),
+          showDeleted: false,
+          singleEvents: true,
+          maxResults: 250,
+          orderBy: "startTime"
+        })
+        .then(function(response) {
+          events = response.result.items;
+          for (let i = 0; i < events.length; i++) {
+            // console.log(events[i].colorId);
+            // Not all day events
+            if (events[i].start.dateTime) {
+              // Temp color
+              let tempColor = calendarColors[events[i].colorId];
+              if (tempColor == null) {
+                tempColor = calendarColors[1];
+              }
+              calendar.addEvent({
+                title: events[i].summary,
+                allDay: false,
+                start: events[i].start.dateTime,
+                end: events[i].end.dateTime,
+                backgroundColor: tempColor
+              });
+            } else {
+              // All day events
+              // Temp color
+              let tempColor = calendarColors[events[i].colorId];
+              if (tempColor == null) {
+                tempColor = calendarColors[1];
+              }
+              calendar.addEvent({
+                title: events[i].summary,
+                allDay: true,
+                start: events[i].start.date,
+                end: events[i].end.date,
+                backgroundColor: tempColor
+              });
             }
-            calendar.addEvent({
-              title: events[i].summary,
-              allDay: false,
-              start: events[i].start.dateTime,
-              end: events[i].end.dateTime,
-              backgroundColor: tempColor
-            });
-          } else {
-            // All day events
-            // Temp color
-            let tempColor = calendarColors[events[i].colorId];
-            if(tempColor == null) {
-              tempColor = calendarColors[1];
-            }
-            calendar.addEvent({
-              title: events[i].summary,
-              allDay: true,
-              start: events[i].start.date,
-              end: events[i].end.date,
-              backgroundColor: tempColor
-            })
           }
-        }
-      });
+        });
     }
     // initialize
     calendarHeader = calendarElement.childNodes[0];
-    calendarHeaderViewSelectorButtons = calendarHeader.querySelector(".fc-right");
-    dayButton = calendarHeaderViewSelectorButtons.querySelector(".fc-timeGridDay-button");
-    weekButton = calendarHeaderViewSelectorButtons.querySelector(".fc-timeGridWeek-button");
+    calendarHeaderViewSelectorButtons = calendarHeader.querySelector(
+      ".fc-right"
+    );
+    dayButton = calendarHeaderViewSelectorButtons.querySelector(
+      ".fc-timeGridDay-button"
+    );
+    weekButton = calendarHeaderViewSelectorButtons.querySelector(
+      ".fc-timeGridWeek-button"
+    );
     calendarTodayButton = calendarHeader.querySelector(".fc-today-button");
     calendarPreviousButton = calendarHeader.querySelector(".fc-prev-button");
     calendarNextButton = calendarHeader.querySelector(".fc-next-button");
 
     // Customization
-    dayButton.innerHTML = "<i class=\"material-icons calendar-icon\">today</i>" + "<p>Day</p>";   
+    dayButton.innerHTML =
+      '<i class="material-icons calendar-icon">today</i>' + "<p>Day</p>";
     dayButton.classList.add("calendar-button-theme");
 
-    weekButton.innerHTML = "<i class=\"material-icons calendar-icon\">view_week</i>" + "<p>Week</p>";
+    weekButton.innerHTML =
+      '<i class="material-icons calendar-icon">view_week</i>' + "<p>Week</p>";
     weekButton.classList.add("calendar-button-theme");
 
-    calendarTodayButton.innerHTML = "<i class=\"material-icons calendar-icon\">calendar_today</i>" + "<p>Today</p>";
+    calendarTodayButton.innerHTML =
+      '<i class="material-icons calendar-icon">calendar_today</i>' +
+      "<p>Today</p>";
     calendarTodayButton.classList.add("calendar-button-theme");
-    
+
     calendarNextButton.classList.add("calendar-button-theme");
 
     calendarPreviousButton.classList.add("calendar-button-theme");
-
   }
 
   function initialize() {
@@ -746,9 +827,9 @@ function loggedIn(initialUser) {
       nowIndicator: true,
       weekends: false,
       header: {
-        left: 'prev,next, today',
-        center: 'title', 
-        right: 'timeGridDay, timeGridWeek'
+        left: "prev,next, today",
+        center: "title",
+        right: "timeGridDay, timeGridWeek"
       }
     });
 
@@ -780,18 +861,23 @@ function loggedIn(initialUser) {
     usernameLabel.innerHTML = user.displayName;
     userProfilePhoto.style.backgroundImage = "url('" + user.photoURL + "')";
     userProfileState.style.backgroundColor = "#47bf39";
+    // Notif
+    if (user.beforeClassStartNotification == "True")
+      beforeStartCheckbox.checked = true;
+    if (user.beforeClassEndNotification == "True")
+      beforeEndCheckbox.checked = true;
+    setNotifRangeInput.value = user.notificationRange;
+    setNotifFrequencyInput.value = user.notificationFrequency;
     // Target Label Set
     if (user.isTeacher == "False") {
       targetUsernameLabelMainText = "Home Classroom";
       targetUsernameLabelSelectedText = "Other Classroom";
 
-      setStudentSaveButton.disabled = true;
-      setStudentTimeInput.disabled = true;
+      setStudentSaveButton.disabled = false;
+      setStudentTimeInput.disabled = false;
     } else if (user.isTeacher == "True") {
       targetUsernameLabelMainText = "Student Email";
       targetUsernameLabelSelectedText = "Other Email";
-      setStudentSaveButton.disabled = false;
-      setStudentTimeInput.disabled = false;
     } else {
       targetUsernameLabelMainText = "N/A";
       targetUsernameLabelSelectedText = "N/A";
@@ -928,8 +1014,14 @@ function loggedIn(initialUser) {
     });
 
     window.addEventListener("click", event => {
-
       if (event.target == settingsModal) {
+        // Notif
+        if (user.beforeClassStartNotification == "True")
+          beforeStartCheckbox.checked = true;
+        if (user.beforeClassEndNotification == "True")
+          beforeEndCheckbox.checked = true;
+        setNotifRangeInput.value = user.notificationRange;
+        setNotifFrequencyInput.value = user.notificationFrequency;
         // Set tab index's
         drawerOpenButton.tabIndex = "1";
         targetUsername.tabIndex = "2";
@@ -986,7 +1078,11 @@ function loggedIn(initialUser) {
           uid: uid,
           photoURL: user.photoURL,
           isTeacher: user.isTeacher,
-          studentTime: user.studentTime
+          studentTime: user.studentTime,
+          beforeClassStartNotification: user.beforeClassStartNotification,
+          beforeClassEndNotification: user.beforeClassEndNotification,
+          notificationFrequency: user.notificationFrequency,
+          notificationRange: user.notificationRange
         })
         .then(function() {
           teacherUser = previousTeacherUser;
@@ -1038,6 +1134,7 @@ function loggedIn(initialUser) {
 
       teacherChangeEmailLabel.innerHTML = "Target Email";
     }
+
     saveTeacherEmailButton.addEventListener(
       "click",
       () => {
@@ -1058,14 +1155,17 @@ function loggedIn(initialUser) {
                 uid: uid,
                 photoURL: user.photoURL,
                 isTeacher: user.isTeacher,
-                studentTime: user.studentTime
+                studentTime: user.studentTime,
+                beforeClassStartNotification: user.beforeClassStartNotification,
+                beforeClassEndNotification: user.beforeClassEndNotification,
+                notificationFrequency: user.notificationFrequency,
+                notificationRange: user.notificationRange
               })
               .then(function() {
                 db.collection("Users")
                   .doc(teacherChangeEmailInput.value)
                   .get()
                   .then(doc => {
-                    console.log(teacherChangeEmailInput.value);
                     previousTeacherProfilePicture =
                       teacherProfilePhoto.style.backgroundImage;
                     if (doc.exists) {
@@ -1273,7 +1373,8 @@ function loggedIn(initialUser) {
   }
   function onTimer() {
     if (minuteTimerAct) {
-      document.getElementById("timerText").innerHTML = "Try Again In " + minuteTimer.toString();
+      document.getElementById("timerText").innerHTML =
+        "Try Again In " + minuteTimer.toString();
 
       minuteTimer--;
       if (minuteTimer < 0) {
