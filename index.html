@@ -116,14 +116,19 @@
           <div id="settings-tabs">
             <div tabindex="5" id="settings-email-tab" class="settings-tab settings-tab-selected">
               <p class="settings-tab-text">
-                Email Settings
+                Email
               </p>
             </div tabindex="5">
             <div tabindex="6" id="settings-teacher-tab" class="settings-tab">
               <p class="settings-tab-text">
-                Time Settings
+                Time
               </p>
             </div tabindex="6">
+            <div tabindex="7" id="settings-notif-tab" class="settings-tab">
+              <p class="settings-tab-text">
+                Notification
+              </p>
+            </div tabindex="7">
           </div>
           <div id="email-settings-body" class="modal-body-post-tabs">
             <div id="modal-change-teacher-email-text">
@@ -181,6 +186,81 @@
               </button>
             </div>
             <div id="set-student-error" class="set-time-error"></div>
+          </div>
+          <div id="notifications-settings-body" class="modal-body-post-tabs" style="display: none;">
+            <div class="notification-type">
+              <div class="notification-text">
+                Before class starts notification
+              </div>
+              <div class="mdc-form-field">
+                <div class="mdc-checkbox">
+                  <input type="checkbox"
+                         class="mdc-checkbox__native-control"
+                         id="before-start-checkbox"/>
+                  <div class="mdc-checkbox__background">
+                    <svg class="mdc-checkbox__checkmark"
+                         viewBox="0 0 24 24">
+                      <path class="mdc-checkbox__checkmark-path"
+                            fill="none"
+                            d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                    </svg>
+                    <div class="mdc-checkbox__mixedmark"></div>
+                  </div>
+                  <div class="mdc-checkbox__ripple"></div>
+                </div>
+              </div>
+            </div>
+            <div class="notification-type">
+              <div class="notification-text">
+                Before class ends notification
+              </div>
+              <div class="mdc-form-field">
+                <div class="mdc-checkbox">
+                  <input type="checkbox"
+                         class="mdc-checkbox__native-control"
+                         id="before-end-checkbox"/>
+                  <div class="mdc-checkbox__background">
+                    <svg class="mdc-checkbox__checkmark"
+                         viewBox="0 0 24 24">
+                      <path class="mdc-checkbox__checkmark-path"
+                            fill="none"
+                            d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                    </svg>
+                    <div class="mdc-checkbox__mixedmark"></div>
+                  </div>
+                  <div class="mdc-checkbox__ripple"></div>
+                </div>
+              </div>
+            </div>
+            <div class="notification-type">
+              <div class="notification-text">
+                Set notification frequency (1-5)
+              </div>
+              <div id="set-notification-frequency-input-fields" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined" style="width: 50px !important;">
+                <input maxlength="2" type="text" id="set-notification-frequency" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+                <div class="mdc-notched-outline mdc-notched-outline--upgraded">
+                  <div class="mdc-notched-outline__leading"></div>
+                  <div class="mdc-notched-outline__trailing"></div>
+                </div>
+              </div>
+            </div>
+            <div class="notification-type">
+              <div class="notification-text">
+                Set notification range (1-15 min)
+              </div>
+              <div id="set-notification-range-input-fields" class="mdc-text-field text-field demo-text-field-outlined-shaped mdc-text-field--outlined" style="width: 50px !important;">
+                <input maxlength="2" type="text" id="set-notification-range" class="mdc-text-field__input" aria-describedby="text-field-outlined-shape-one-helper-text">
+                <div class="mdc-notched-outline mdc-notched-outline--upgraded">
+                  <div class="mdc-notched-outline__leading"></div>
+                  <div class="mdc-notched-outline__trailing"></div>
+                </div>
+              </div>
+            </div>
+            <div class="notification-save-div">
+              <button id="notification-setting-save-button" class="demo-button mdc-button mdc-button--outlined mdc-ripple-upgraded">
+                <span class="mdc-button__label">save</span>
+              </button>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -339,15 +419,7 @@
         <video id="localVideo" autoplay="true" muted="true"></video>
       </div>
       <div id="stage"></div>
-      <!-- <div id="calendarDisplay">
-        <p>Google Calendar</p>
-
-        Add buttons to initiate auth sequence and sign out
-        <button id="authorize_button" style="display: none;">Authorize</button>
-        <button id="signout_button" style="display: none;">Sign Out</button>
-
-        <pre id="content" style="white-space: pre-wrap;"></pre>
-      </div> --> 
+      
         
     </div>
     <div id="loggedOutElements"></div>
