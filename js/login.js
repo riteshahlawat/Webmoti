@@ -53,6 +53,10 @@ var uiConfig = {
             let isTeacher = data.isTeacher;
             let status = data.status;
             let studentTime = data.studentTime;
+            let beforeClassEndNotification = data.beforeClassEndNotification;
+            let beforeClassStartNotification = data.beforeClassStartNotification;
+            let notificationFrequency = data.notificationFrequency;
+            let notificationRange = data.notificationRange;
             db.collection("Users")
               .doc(authResult.user.email)
               .set({
@@ -62,7 +66,11 @@ var uiConfig = {
                 uid: id,
                 photoURL: authResult.user.photoURL,
                 isTeacher: isTeacher,
-                studentTime: studentTime
+                studentTime: studentTime,
+                beforeClassEndNotification: beforeClassEndNotification,
+                beforeClassStartNotification: beforeClassStartNotification,
+                notificationFrequency: notificationFrequency,
+                notificationRange: notificationRange
               })
               .then(function() {
                 window.location.replace("index.html");
@@ -71,6 +79,7 @@ var uiConfig = {
                 console.error("Error adding document: ", error);
               });
           } else {
+            console.log("No");
             db.collection("Users")
               .doc(authResult.user.email)
               .set({
@@ -80,7 +89,11 @@ var uiConfig = {
                 uid: id,
                 photoURL: authResult.user.photoURL,
                 isTeacher: "False",
-                studentTime: "30"
+                studentTime: "30",
+                beforeClassStartNotification: "False",
+                beforeClassEndNotification: "False",
+                notificationFrequency: 2,
+                notificationRange: 10
               })
               .then(function() {
                 window.location.replace("index.html");
