@@ -1,3 +1,4 @@
+// Unique firebase config object
 var firebaseConfig = {
   apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
   authDomain: "webmotia.firebaseapp.com",
@@ -16,16 +17,7 @@ var firebaseConfig = {
   ],
   clientId: "1053696254964-r66l5j9ll5p8rt5gukocqo5qpseds8q0.apps.googleusercontent.com"
 };
-// var firebaseConfig = {
-//   apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
-//   authDomain: "tempwebmoti.firebaseapp.com",
-//   databaseURL: "https://tempwebmoti.firebaseio.com",
-//   projectId: "tempwebmoti",
-//   storageBucket: "tempwebmoti.appspot.com",
-//   messagingSenderId: "640467167824",
-//   appId: "1:640467167824:web:2aa34c043975558953bf55",
-//   measurementId: "G-VWENQE1FSM"
-// };
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
@@ -39,47 +31,19 @@ var uiConfig = {
   callbacks: {
     signInSuccessWithAuthResult: function(authResult, redirectUrl) {
       // User successfully signed in.
-      // Return type determines whether we continue the redirect automatically
-      // or whether we leave that to developer to handle.
+      // Firebase ID used later
       var id = firebase.auth().currentUser.uid;
-      console.log(id);
       db.collection("Users")
         .doc(authResult.user.email)
         .get()
         .then(doc => {
+          // If User already exists, redirect
           if (doc.exists) {
-            let data = doc.data();
-            let teacherEmail = data.teacherEmail;
-            let isTeacher = data.isTeacher;
-            let status = data.status;
-            let studentTime = data.studentTime;
-            let beforeClassEndNotification = data.beforeClassEndNotification;
-            let beforeClassStartNotification = data.beforeClassStartNotification;
-            let notificationFrequency = data.notificationFrequency;
-            let notificationRange = data.notificationRange;
-            db.collection("Users")
-              .doc(authResult.user.email)
-              .set({
-                email: authResult.user.email,
-                teacherEmail: teacherEmail,
-                displayName: authResult.user.displayName,
-                uid: id,
-                photoURL: authResult.user.photoURL,
-                isTeacher: isTeacher,
-                studentTime: studentTime,
-                beforeClassEndNotification: beforeClassEndNotification,
-                beforeClassStartNotification: beforeClassStartNotification,
-                notificationFrequency: notificationFrequency,
-                notificationRange: notificationRange
-              })
-              .then(function() {
-                window.location.replace("index.html");
-              })
-              .catch(function(error) {
-                console.error("Error adding document: ", error);
-              });
+            window.location.replace("index.html");
+              
           } else {
-            console.log("No");
+            // If not, then store new User information with default variables
+            // and then redirect
             db.collection("Users")
               .doc(authResult.user.email)
               .set({

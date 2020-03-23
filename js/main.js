@@ -1,5 +1,5 @@
 var mainUser;
-// Your web app's Firebase configuration
+// Firebase configuration
 var firebaseConfig = {
   apiKey: "AIzaSyA51GCqxDw7AuvfNmCcWjbGLtClJNFaUxE",
   authDomain: "webmotia.firebaseapp.com",
@@ -9,16 +9,7 @@ var firebaseConfig = {
   messagingSenderId: "606747164317",
   appId: "1:606747164317:web:952c390708ccb09d"
 };
-// var firebaseConfig = {
-//   apiKey: "AIzaSyA8BvFlnJpqxnjoB3zeG355JA_SVkjGZGc",
-//   authDomain: "tempwebmoti.firebaseapp.com",
-//   databaseURL: "https://tempwebmoti.firebaseio.com",
-//   projectId: "tempwebmoti",
-//   storageBucket: "tempwebmoti.appspot.com",
-//   messagingSenderId: "640467167824",
-//   appId: "1:640467167824:web:2aa34c043975558953bf55",
-//   measurementId: "G-VWENQE1FSM"
-// };
+
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
@@ -47,6 +38,7 @@ firebase.auth().onAuthStateChanged(user => {
     // This is where we will store data about being online/offline.
     userStatusDatabaseRef = firebase.database().ref("/status/" + uid);
     console.log("Logged in", user);
+    // Automatically log into firebase database once logged in to show "online" status
     firebase
       .database()
       .ref(".info/connected")
@@ -62,17 +54,19 @@ firebase.auth().onAuthStateChanged(user => {
             userStatusDatabaseRef.set(isOnlineForDatabase);
           });
       });
-    console.log(user.studentTime);
-    db.collection("Users")
+      // retrieve logged in user data, only then display data
+      db.collection("Users")
       .doc(user.email)
       .get()
       .then(doc => {
         if (doc.exists) {
           let data = doc.data();
+          // display elements
           loggedInElements.style.display = "block";
+          // run all logged in functions
           loggedIn(data);
         } else {
-          // Undefined
+          // makes it so that you cannot use application without logging in first
           console.log("No Such Document");
           loggedInElements.style.display = "none";
           window.location.replace("login.html");
@@ -87,13 +81,18 @@ firebase.auth().onAuthStateChanged(user => {
     window.location.replace("login.html");
   }
 });
-
+/**
+ * Function to logout user
+ */
 function logOut() {
   firebase.auth().signOut();
   // gapi.auth2.getAuthInstance().signOut();
 }
 
-// Runs once logged in
+/**
+ * Function that runs once data is retrieved (user exists and is logged in)
+ * @param {object} initialUser object that holds all user data
+ */
 function loggedIn(initialUser) {
   var user = initialUser;
   //Initialize Socket.io
@@ -115,7 +114,7 @@ function loggedIn(initialUser) {
   var callButton = document.getElementById("call");
   var drawerLogoutButton = document.getElementById("drawer-logout-button");
 
-  // drawer setup
+  // MDC drawer setup
   var drawer = mdc.drawer.MDCDrawer.attachTo(
     document.querySelector(".mdc-drawer")
   );
@@ -250,6 +249,7 @@ function loggedIn(initialUser) {
   var dayButton;
   var weekButton;
   var events = null;
+  // object representing google's color ids and respective colors
   var calendarColors = {
     1: "#7986cb",
     2: "#33b679",
@@ -263,18 +263,19 @@ function loggedIn(initialUser) {
     10: "#0b8043",
     11: "#d60000"
   };
-
+  // Variables
   var previousTeacherEmail;
   var previousTeacherProfilePicture;
   var previousTeacherUser;
   var teacherState = null;
   var teacherStateLastChanged = null;
-
+  // Socket IO variables
   var localStream = null;
   var pc = null;
   var isCaller = true;
   var isStudent = true;
   var mediaDetails;
+  // Visual timer variables
   var coolDown = false;
   var minuteTimer;
   var minuteTimerAct = false;
@@ -286,18 +287,24 @@ function loggedIn(initialUser) {
   var targetUsernameLabelMainText;
   var targetUsernameLabelSelectedText;
   var currentSettingsTab = "email";
-  setRandomUser(username);
-  function setRandomUser(textbox) {
-    textbox.value = email;
-  }
-
+  
+  // Initialize functions and variables 
   initialize();
 
+  
   targetUsername.addEventListener("click", clearBox);
+  /**
+   * Clears target text input box allowing you to type 
+   * a temporary target to call
+   */
   function clearBox() {
     targetUsername.value = "";
   }
 
+  /**
+   * Function called each time a connection state changes for WebRTC protocol
+   * @param {object} event RTC change event
+   */
   function logConnectionStates(event) {
     console.log("Connection state changed to: " + pc.connectionState);
     if (pc.connectionState == "connected") {
@@ -312,35 +319,30 @@ function loggedIn(initialUser) {
     }
   }
 
+  /**
+   * Function that is called each time a signaling state changes for WebRTC protocol 
+   * @param {object} event RTC signal event
+   */
   function logSignalingStates(event) {
     console.log("Signaling state changed to: " + pc.signalingState);
     if (pc.signalingState == "stable") {
+      // Initialize video call related keyboard listener
       keyboardListener();
       zoom();
     }
   }
 
   //Adding an event listener to send our SDP info to the server
-  //document.getElementById("connect").addEventListener("click", connect);
   callButton.addEventListener("click", call);
-  // function connect()
-  // {
-  //   checkCaller();
-  //   if(isCaller)
-  //   {
-  //   identifyAsCaller();
-  //   }
-  //   listenEvent();
-  //
-  //
-  // }
   function call() {
     createPeerConnection();
     mediaDetails = getMedia(pc);
   }
 
+  // Set logout button to logout
   drawerLogoutButton.addEventListener("click", logOut);
 
+  // Set hangup button to end the call and reset RTC variables
   hangupButton.addEventListener("click", hangup);
   function hangup() {
     console.log("Hanging up");
@@ -375,14 +377,9 @@ function loggedIn(initialUser) {
     callButton.classList.remove("disabled");
   }
 
-  function checkCaller() {
-    if (targetUsername.value != "") {
-      isCaller = true;
-    } else {
-      isCaller = false;
-    }
-  }
-
+  /**
+   * Function to create a new RTC connection
+   */
   function createPeerConnection() {
     //Declaring iceServers and creating a new PeerConnection
     const config = {
@@ -404,7 +401,11 @@ function loggedIn(initialUser) {
     pc.onconnectionstatechange = logConnectionStates;
     pc.onsignalingstatechange = logSignalingStates;
   }
-  //Getting the media from the browser
+  
+  /**
+   * Function to get the media from the browser
+   * @param {object} pc RTC variable
+   */
   function getMedia(pc) {
     navigator.mediaDevices
       .getUserMedia(constraints)
@@ -422,8 +423,10 @@ function loggedIn(initialUser) {
     console.log("Got the Webcam/Media from the browser");
   }
 
+  /**
+   * Creating a new offer and then set the local description of the RTCPeerConnection pc
+   */
   function offer() {
-    //Creating a new offer and then set the local description of the RTCPeerConnection pc
 
     pc.createOffer()
       .then(function(offer) {
@@ -444,6 +447,13 @@ function loggedIn(initialUser) {
         );
       });
   }
+  /**
+   * Function to store log of connections to database
+   * @param {String} username 
+   * @param {String} targetUsername 
+   * @param {String} type 
+   * @param {object} sdp 
+   */
   function sendToServer(username, targetUsername, type, sdp) {
     const data = {
       username: username,
@@ -471,11 +481,18 @@ function loggedIn(initialUser) {
         console.error("Error adding document: ", error);
       });
   }
+  /**
+   * Function to send keystrokes to target user
+   * @param {String} str 
+   */
   function sendToPeer(str) {
     sendToServer(targetUsername.value, username.value, "peer-data", str);
   }
 
-  //The ice sending/receiving functions
+  /**
+   * Function to send ICE
+   * @param {object} ice 
+   */
   function sendIce(ice) {
     if (ice.candidate) {
       sendToServer(
@@ -487,6 +504,10 @@ function loggedIn(initialUser) {
       console.log("Sent new ICE candidate " + JSON.stringify(ice.candidate));
     }
   }
+  /**
+   * Function to receive ICE
+   * @param {object} ice 
+   */
   function receiveIce(ice) {
     console.log("Received new ICE Candidate: " + ice);
     var cand = new RTCIceCandidate(JSON.parse(ice));
@@ -494,12 +515,19 @@ function loggedIn(initialUser) {
       console.log(e);
     });
   }
-  // Accessibilities keydowns
+
+  /**
+   * Accessibilities keydowns regarding saving settings
+   * or calling/ending call using only keyboard
+   */
   document.addEventListener("keydown", event => {
     let keyName = event.key;
-
+    // Enter pressed
     if (keyName == "Enter") {
+      // Either in settings page or in main page
       if (onSettingsPage) {
+        // In setting page
+        // Decides which tab/save button to click/go to
         if (document.activeElement == settingsTimeTab) {
           if (settingsEmailBody.style.display == "flex") {
             saveTeacherEmailButton.click();
@@ -516,6 +544,8 @@ function loggedIn(initialUser) {
           settingsNotifTab.click();
         }
       } else {
+        // In main page
+        // Determines whether hanging up call calling, or navigating to side menu
         if (document.activeElement == drawerLogoutButton) {
           drawerLogoutButton.click();
         } else if (document.activeElement == drawerSettingsButton) {
@@ -527,6 +557,7 @@ function loggedIn(initialUser) {
         }
       }
     } else if (keyName == "Escape") {
+      // If escaped pressed, exit out of pop up (settings or calendar for now)
       if (onSettingsPage) {
         settingsModal.click();
       } else if (onCalendarPage) {
@@ -535,6 +566,11 @@ function loggedIn(initialUser) {
       }
     }
   });
+
+  /**
+   * Function that sends messages to target user
+   * using database
+   */
   function keyboardListener() {
     console.log("Adding the keyboard event listener");
     document.addEventListener(
@@ -544,6 +580,7 @@ function loggedIn(initialUser) {
           document.activeElement == document.getElementsByTagName("BODY")[0]
         ) {
           const keyName = event.key;
+          // camera controls
           switch (keyName) {
             case "q":
               sendToPeer(keyName);
@@ -567,6 +604,14 @@ function loggedIn(initialUser) {
               resetZoom();
               break;
             case "Enter":
+              /**
+               * Visual timer for hand display to teacher
+               * functions as follows:
+               * - Display hand (to teacher) and bell
+               * - Start cooldown of 30 seconds
+               * - If User presses enter again within this timeframe of 30 seconds, it shows the visual timer
+               * - Once timer is reset, then allow user to raise ahnd again
+               */
               if (coolDown) {
                 document.getElementsByClassName(
                   "timer-group"
@@ -591,6 +636,7 @@ function loggedIn(initialUser) {
                 }
                 coolDown = true;
               }
+              
               setTimeout(urgentCooldown, 60000);
               urgentQuestion = true;
               break;
@@ -603,16 +649,10 @@ function loggedIn(initialUser) {
     );
   }
 
-  function identifyAsCaller() {
-    console.log("Identifying self as Caller: " + username.value);
-    sendToServer(
-      targetUsername.value,
-      username.value,
-      "initial-registration",
-      ""
-    );
-  }
-  // Settings tab on clicks
+  
+  /**
+   * Display email settings when email tab is clicked
+   */
   settingsEmailTab.addEventListener("click", () => {
     if (currentSettingsTab != "email") {
       currentSettingsTab = "email";
@@ -625,6 +665,9 @@ function loggedIn(initialUser) {
       settingsNotifBody.style.display = "none";
     }
   });
+  /**
+   * Display time settings when time tab is clicked
+   */
   settingsTimeTab.addEventListener("click", () => {
     if (currentSettingsTab != "teacher") {
       currentSettingsTab = "teacher";
@@ -637,7 +680,9 @@ function loggedIn(initialUser) {
       settingsTimeBody.style.display = "flex";
     }
   });
-
+  /**
+   * Display notification settings when notification tab is clicked
+   */
   settingsNotifTab.addEventListener("click", () => {
     if (currentSettingsTab != "notification") {
       currentSettingsTab = "notification";
@@ -651,11 +696,15 @@ function loggedIn(initialUser) {
     }
   });
 
+  /**
+   * Function to save notification settings once clicked
+   */
   saveNotifSettingsButton.addEventListener("click", () => {
     let freqVal = setNotifFrequencyInput.value;
     let rangeVal = setNotifRangeInput.value;
+    // If input in correct range
     if (freqVal >= 1 && freqVal <= 5 && rangeVal >= 1 && rangeVal <= 15) {
-      // Valid, now update documents
+      // Valid, now update documents and local variables 
       let startNotif = beforeStartCheckbox.checked;
       let endNotif = beforeEndCheckbox.checked;
       let startUpload = "False";
@@ -688,9 +737,13 @@ function loggedIn(initialUser) {
         });
     }
   });
-
+  /**
+   * Function to save new hand raise wait time
+   * Hard part is to save both our side and update target side in real time
+   */
   setStudentSaveButton.addEventListener("click", () => {
     if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
+      // Update document for target
       db.collection("Users")
         .doc(teacherUser.email)
         .set({
@@ -708,6 +761,7 @@ function loggedIn(initialUser) {
           notificationRange: teacherUser.notificationRange
         })
         .then(function() {
+          // Once successfully saved, update our side and exit out of settings
           teacherUser.studentTime = setStudentTimeInput.value;
           document.querySelectorAll(".hand-span").forEach(element => {
             element.style.animationDuration = setStudentTimeInput.value + "s";
@@ -721,6 +775,10 @@ function loggedIn(initialUser) {
         });
     }
   });
+  /**
+   * Function that shows dynamically an error message 
+   * if correct input not in range
+   */
   setStudentTimeInput.addEventListener("keyup", () => {
     if (setStudentTimeInput.value < 10 || setStudentTimeInput.value > 60) {
       setStudentError.innerHTML = "Please enter a value between 10-60";
@@ -728,16 +786,23 @@ function loggedIn(initialUser) {
       setStudentError.innerHTML = "";
     }
   });
-  // Calendar
+  
+  /**
+   * Function to display calendar
+   */
   calendarWidget.addEventListener("click", () => {
     calendarModal.style.display = "flex";
     onCalendarPage = true;
     calendar.render();
     postCalendarLoad();
   });
-  // Called after every calender render to render our own custom stuff to customize calendar
+  
+  /**
+   * Function that is called after every calender render to 
+   * render our own custom stuff to customize calendar
+   */
   function postCalendarLoad() {
-    // Get events once and load them
+    // If event object not previously loaded, then load once
     if (events == null) {
       gapi.client.calendar.events
         .list({
@@ -749,16 +814,17 @@ function loggedIn(initialUser) {
           orderBy: "startTime"
         })
         .then(function(response) {
+          // for each event gathered, upload to our calendar 
           events = response.result.items;
           for (let i = 0; i < events.length; i++) {
-            // console.log(events[i].colorId);
-            // Not all day events
+            // Not all day events, need to process an all day event differently
             if (events[i].start.dateTime) {
-              // Temp color
+              // Temp color, retrieve the color from the reference id to color object
               let tempColor = calendarColors[events[i].colorId];
               if (tempColor == null) {
                 tempColor = calendarColors[1];
               }
+              // Add event
               calendar.addEvent({
                 title: events[i].summary,
                 allDay: false,
@@ -784,7 +850,7 @@ function loggedIn(initialUser) {
           }
         });
     }
-    // initialize
+    // initialize calendar elements and how they are to be displayed
     calendarHeader = calendarElement.childNodes[0];
     calendarHeaderViewSelectorButtons = calendarHeader.querySelector(
       ".fc-right"
@@ -818,9 +884,11 @@ function loggedIn(initialUser) {
     calendarPreviousButton.classList.add("calendar-button-theme");
   }
 
+  /**
+   * Function that initializes functions and variables
+   */
   function initialize() {
-    // Calendar
-    // calendarModal.style.display = "none";
+    // Calendar init and render
     calendar = new FullCalendar.Calendar(calendarElement, {
       plugins: ["timeGrid"],
       defaultView: "timeGridDay",
@@ -834,19 +902,25 @@ function loggedIn(initialUser) {
     });
 
     calendar.render();
-
+    // Usernames init
+    username.value = email;
     let teacherEmail = user.teacherEmail;
+    // Timer init
     minuteTimer = user.studentTime;
     document.querySelectorAll(".hand-span").forEach(element => {
       element.style.animationDuration = user.studentTime.toString(10) + "s";
     });
     document.querySelector(".minute").style.animationDuration =
       user.studentTime.toString(10) + "s";
+    // Snapshot of the data allows us to call the function whenever our data is changed
+    // Currently used to automatically adjust timer when changed by the target
     db.collection("Users")
       .doc(user.email)
       .onSnapshot(doc => {
         let data = doc.data();
+        // Check if timer is changed
         if (user.studentTime != data.studentTime) {
+          // Adjust
           user.studentTime = data.studentTime;
           minuteTimer = user.studentTime;
           document.querySelectorAll(".hand-span").forEach(element => {
@@ -857,6 +931,7 @@ function loggedIn(initialUser) {
             user.studentTime.toString(10) + "s";
         }
       });
+    // get target's photo
     targetUsername.value = teacherEmail;
     usernameLabel.innerHTML = user.displayName;
     userProfilePhoto.style.backgroundImage = "url('" + user.photoURL + "')";
@@ -883,13 +958,14 @@ function loggedIn(initialUser) {
       targetUsernameLabelSelectedText = "N/A";
     }
     targetUsernameLabel.innerHTML = targetUsernameLabelMainText;
+    // Store target (teacher) data locally
     db.collection("Users")
       .doc(user.teacherEmail)
       .get()
       .then(doc => {
         if (doc.exists) {
           teacherUser = doc.data();
-          // Teacher online/offline
+          // Snapshot to update online status visually once changed in the database
           teacherUserDatabaseRef = firebase
             .database()
             .ref("/status/" + teacherUser.uid)
@@ -919,7 +995,14 @@ function loggedIn(initialUser) {
       .catch(err => {
         console.log("Error getting document: ", err);
       });
+    
+    /**
+     * Function that is called when user is typing to change target email
+     */
     teacherChangeEmailInput.addEventListener("keyup", () => {
+      // Things to display:
+      // - whether a proper email format
+      // - whether the target email and target retype email match
       var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (regexEmail.test(teacherChangeEmailInput.value.toLowerCase())) {
         if (teacherChangeEmailInput.value == teacherChangeRetypeInput.value) {
@@ -935,6 +1018,10 @@ function loggedIn(initialUser) {
         teacherEmailError.innerHTML = "Email not proper format";
       }
     });
+    
+    /**
+     * Same as above but for the retype email
+     */
     teacherChangeRetypeInput.addEventListener("keyup", () => {
       var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       if (regexEmail.test(teacherChangeRetypeInput.value.toLowerCase())) {
@@ -993,7 +1080,10 @@ function loggedIn(initialUser) {
     drawerHeaderEmail.innerHTML = user.email;
 
     mdc.ripple.MDCRipple.attachTo(drawerOpenButton);
-
+    
+    /**
+     * Function to open the drawer once clicked
+     */
     drawerOpenButton.addEventListener("click", function() {
       if (drawer.open) {
         drawer.open = false;
@@ -1008,12 +1098,17 @@ function loggedIn(initialUser) {
     listEl.addEventListener("click", event => {
       drawer.open = false;
     });
-
+    
+    // Function to open settings menu
     settingsSpan.addEventListener("click", () => {
       settingsModal.click();
     });
 
+    /**
+     * Function that runs when an object was clicked
+     */
     window.addEventListener("click", event => {
+      // Load settings menu
       if (event.target == settingsModal) {
         // Notif
         if (user.beforeClassStartNotification == "True")
@@ -1050,10 +1145,11 @@ function loggedIn(initialUser) {
         teacherChangeRetypeInput.value = "";
       }
       if (event.target == calendarModal) {
-        // Calendar
+        // Close calendar if clicked outside the calendar while it is open
         calendarModal.style.display = "none";
         onCalendarPage = false;
       }
+      // Target username
       if (event.target == targetUsername) {
         targetUsernameLabel.innerHTML = targetUsernameLabelSelectedText;
       }
@@ -1066,7 +1162,10 @@ function loggedIn(initialUser) {
         }
       }
     });
-    // Undo button
+    
+    /**
+     * Function that undo's the changing of the teacher's email
+     */
     undoTeacherEmailChangeButton.addEventListener("click", () => {
       console.log(previousTeacherEmail);
       db.collection("Users")
@@ -1115,7 +1214,11 @@ function loggedIn(initialUser) {
         });
     });
 
-    // Edit/Save button
+    /**
+     * Function to dynamically clear the target input if clicked
+     * and if nothing is inputted, to change it back to the previously
+     * saved target email
+     */
     var tempEmailInput = "";
     teacherChangeEmailInput.addEventListener("click", () => {
       teacherChangeEmailInputClick();
@@ -1135,16 +1238,21 @@ function loggedIn(initialUser) {
       teacherChangeEmailLabel.innerHTML = "Target Email";
     }
 
+    /**
+     * Function that is called when saving the change of the 
+     * target email address
+     */
     saveTeacherEmailButton.addEventListener(
       "click",
       () => {
-        // Clicked on save
-
+        
+        // Check if email address and retype email address are both valid
+        // addresses and are the same
         if (teacherChangeRetypeInput.value == teacherChangeEmailInput.value) {
           // Same email
           var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
           if (regexEmail.test(teacherChangeRetypeInput.value.toLowerCase())) {
-            // valid email format
+            // valid email format, upload database and local variables
             console.log("Uploading email:", teacherChangeEmailInput.value);
             db.collection("Users")
               .doc(user.email)
@@ -1162,6 +1270,7 @@ function loggedIn(initialUser) {
                 notificationRange: user.notificationRange
               })
               .then(function() {
+                // Get new teacher profile photo
                 db.collection("Users")
                   .doc(teacherChangeEmailInput.value)
                   .get()
@@ -1177,7 +1286,9 @@ function loggedIn(initialUser) {
                         .database()
                         .ref("/status/" + teacherUser.uid)
                         .on("value", snapshot => {
+                          // Snapshot for updating newly changed teacher online/offline status
                           if (snapshot) {
+                            // once added snapshot, change local variables and profile photo
                             let tempData = snapshot.val();
                             teacherState = tempData.state;
                             teacherStateLastChanged = tempData.last_changed;
@@ -1206,6 +1317,7 @@ function loggedIn(initialUser) {
                   .catch(err => {
                     console.log("Error getting document: ", err);
                   });
+                // Exit out of settings
                 teacherChangeEmailLabel.innerHTML = "Target Email";
                 user.teacherEmail = teacherChangeEmailInput.value;
                 targetUsername.value = teacherChangeEmailInput.value;
@@ -1231,7 +1343,7 @@ function loggedIn(initialUser) {
     /* --------------------------------------------- */
     /* --------------------------------------------- */
     /* --------------------------------------------- */
-
+    // Initial registration with server
     console.log("Identifying self with server: " + username.value);
     sendToServer(
       username.value,
@@ -1250,6 +1362,10 @@ function loggedIn(initialUser) {
     });
   }
 
+  /**
+   * Function to answer a WebRTC call
+   * @param {object} call 
+   */
   function answer(call) {
     createPeerConnection();
 
@@ -1288,10 +1404,13 @@ function loggedIn(initialUser) {
       })
       .catch();
   }
+
+  /**
+   * Function that listens for changes within the target user
+   */
   function listenTarget() {
-    // We are listening for changes within the target user
     const target = targetUsername.value;
-    //Setting up a listener for changes in targetUsername values in the database
+    // Setting up a listener for changes in targetUsername values in the database
     console.log("Fetching records matching username: " + target);
     db.collection("SDP")
       .doc(target)
@@ -1306,17 +1425,17 @@ function loggedIn(initialUser) {
             console.log("Found caller username " + user);
             targetUsername.value = user;
           }
-          // if(type == "video-offer")
-          // {
-          //   console.log("Received video offer!");
-          //    answer(doc);
-          // }
         },
         function(error) {
           console.log(error);
         }
       );
   }
+  
+  /**
+   * Function to handle incoming data to move the camera
+   * @param {String} peerData 
+   */
   function handlePeerData(peerData) {
     console.log(peerData);
 
@@ -1349,6 +1468,10 @@ function loggedIn(initialUser) {
     }
   }
   // Hand functions
+
+  /**
+   * Function to wave hand
+   */
   function waveHand() {
     document.getElementById("hand").style.display = "block";
     document.getElementById("hand").classList.add("handAnimation0");
@@ -1356,6 +1479,9 @@ function loggedIn(initialUser) {
       document.getElementById("hand").style.display = "none";
     }, 5000);
   }
+  /**
+   * Function to wave hand urgently
+   */
   function urgentHand() {
     document.getElementById("hand").style.display = "block";
     document.getElementById("hand").classList.add("handAnimation1");
@@ -1364,13 +1490,23 @@ function loggedIn(initialUser) {
       document.getElementById("hand").style.display = "none";
     }, 5000);
   }
+  /**
+   * Function to stop the cooldown
+   */
   function finishCooldown() {
     coolDown = false;
     document.getElementsByClassName("timer-group")[0].style.display = "none";
   }
+  /**
+   * Function to stop the urgent cooldown
+   */
   function urgentCooldown() {
     urgentQuestion = false;
   }
+  /**
+   * Function that is ran every second to display the passage
+   * of time visually
+   */
   function onTimer() {
     if (minuteTimerAct) {
       document.getElementById("timerText").innerHTML =
@@ -1389,6 +1525,9 @@ function loggedIn(initialUser) {
     }
   }
 
+  /**
+   * Function that listens to changes in our database for RTC connections
+   */
   function listenSelf() {
     console.log("Listening for changes in the entry matching our username ");
     db.collection("SDP")
@@ -1434,7 +1573,10 @@ function loggedIn(initialUser) {
         }
       );
   }
-
+  /**
+   * Function to handle a video in a signalling state
+   * @param {object} event 
+   */
   function handleTrackEvent(event) {
     console.log(
       "Attaching remote video in signalling state: " +
