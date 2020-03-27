@@ -161,8 +161,8 @@ input {
   padding: 0;
   border: 1px solid #888;
   min-width: 470px;
-  width: 40%;
-  height: 55%;
+  width: 50%;
+  height: 70%;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -webkit-animation-name: animatetop;
   -webkit-animation-duration: 0.4s;
@@ -210,13 +210,14 @@ input {
 }
 
 .modal-header {
-  height: 15%;
+  height: 10%;
   padding: 2px 16px;
   background-color: white;
   color: black;
   display: flex;
   justify-content: space-between;
 }
+
 #modal-header-container {
   font-family: "Roboto", sans-serif;
   font-size: 25px;

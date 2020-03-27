@@ -57,7 +57,9 @@ var uiConfig = {
                 beforeClassStartNotification: "False",
                 beforeClassEndNotification: "False",
                 notificationFrequency: 2,
-                notificationRange: 10
+                notificationRange: 10,
+                vibrate: "True",
+                sound: "True"
               })
               .then(function() {
                 window.location.replace("index.html");

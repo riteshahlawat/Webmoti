@@ -54,8 +54,8 @@ firebase.auth().onAuthStateChanged(user => {
             userStatusDatabaseRef.set(isOnlineForDatabase);
           });
       });
-      // retrieve logged in user data, only then display data
-      db.collection("Users")
+    // retrieve logged in user data, only then display data
+    db.collection("Users")
       .doc(user.email)
       .get()
       .then(doc => {
@@ -149,9 +149,7 @@ function loggedIn(initialUser) {
   var teacherChangeEmailLabel = document.getElementById(
     "teacher-input-label-field"
   );
-  var teacherChangeEmailInput = document.getElementById(
-    "teacher-change-email-input"
-  );
+  
   var saveTeacherEmailButton = document.getElementById(
     "edit-teacher-email-button"
   );
@@ -176,9 +174,7 @@ function loggedIn(initialUser) {
   var teacherRetypeEmailInputWorkable = document.getElementById(
     "teacher-input-retype-text-field"
   );
-  var teacherChangeRetypeInput = document.getElementById(
-    "teacher-retype-email-input"
-  );
+  
   const teacherChangeEmailDifferentSnackbar = new mdc.snackbar.MDCSnackbar(
     document.getElementById("teacher-email-change-different-snackbar")
   );
@@ -186,15 +182,14 @@ function loggedIn(initialUser) {
     document.getElementById("improper-teacher-change-email-snackbar")
   );
 
-  var teacherEmailError = document.getElementById("teacher-change-email-error");
 
-  var teacherRetypeEmailError = document.getElementById(
-    "teacher-change-retype-email-error"
-  );
+  
 
   // Notifications settings
   var beforeStartCheckbox = document.getElementById("before-start-checkbox");
   var beforeEndCheckbox = document.getElementById("before-end-checkbox");
+  var vibrateCheckBox = document.getElementById("vibrate-checkbox");
+  var soundCheckbox = document.getElementById("sound-checkbox");
 
   var setNotifRangeInputFields = new mdc.textField.MDCTextField(
     document.getElementById("set-notification-range-input-fields")
@@ -219,36 +214,16 @@ function loggedIn(initialUser) {
   var userProfileState = document.getElementById("user-photo-state");
   var teacherProfileState = document.getElementById("teacher-photo-state");
 
-  // Settings tabs
-  var settingsTimeBody = document.getElementById("teacher-settings-body");
-  var settingsEmailBody = document.getElementById("email-settings-body");
-  var settingsNotifBody = document.getElementById(
-    "notifications-settings-body"
-  );
+  
 
-  var settingsEmailTab = document.getElementById("settings-email-tab");
-  var settingsTimeTab = document.getElementById("settings-teacher-tab");
-  var settingsNotifTab = document.getElementById("settings-notif-tab");
+  
 
-  var setStudentTimeInput = document.getElementById("set-student-input");
-  var setStudentSaveButton = document.getElementById(
-    "set-student-time-save-button"
-  );
-  var setStudentError = document.getElementById("set-student-error");
+  
 
   // Calendar
-  var calendarWidget = document.getElementById("calendar-widget");
-  var calendarElement = document.getElementById("calendar");
   var calendarModal = document.getElementById("calendar-modal");
   var calendar;
-  var calendarHeader;
-  var calendarHeaderViewSelectorButtons;
-  var calendarTodayButton;
-  var calendarPreviousButton;
-  var calendarNextButton;
-  var dayButton;
-  var weekButton;
-  var events = null;
+  
   // object representing google's color ids and respective colors
   var calendarColors = {
     1: "#7986cb",
@@ -286,15 +261,13 @@ function loggedIn(initialUser) {
   var onCalendarPage = false;
   var targetUsernameLabelMainText;
   var targetUsernameLabelSelectedText;
-  var currentSettingsTab = "email";
-  
-  // Initialize functions and variables 
+
+  // Initialize functions and variables
   initialize();
 
-  
   targetUsername.addEventListener("click", clearBox);
   /**
-   * Clears target text input box allowing you to type 
+   * Clears target text input box allowing you to type
    * a temporary target to call
    */
   function clearBox() {
@@ -320,7 +293,7 @@ function loggedIn(initialUser) {
   }
 
   /**
-   * Function that is called each time a signaling state changes for WebRTC protocol 
+   * Function that is called each time a signaling state changes for WebRTC protocol
    * @param {object} event RTC signal event
    */
   function logSignalingStates(event) {
@@ -401,7 +374,7 @@ function loggedIn(initialUser) {
     pc.onconnectionstatechange = logConnectionStates;
     pc.onsignalingstatechange = logSignalingStates;
   }
-  
+
   /**
    * Function to get the media from the browser
    * @param {object} pc RTC variable
@@ -427,7 +400,6 @@ function loggedIn(initialUser) {
    * Creating a new offer and then set the local description of the RTCPeerConnection pc
    */
   function offer() {
-
     pc.createOffer()
       .then(function(offer) {
         console.log("Offer created!");
@@ -449,10 +421,10 @@ function loggedIn(initialUser) {
   }
   /**
    * Function to store log of connections to database
-   * @param {String} username 
-   * @param {String} targetUsername 
-   * @param {String} type 
-   * @param {object} sdp 
+   * @param {String} username
+   * @param {String} targetUsername
+   * @param {String} type
+   * @param {object} sdp
    */
   function sendToServer(username, targetUsername, type, sdp) {
     const data = {
@@ -483,7 +455,7 @@ function loggedIn(initialUser) {
   }
   /**
    * Function to send keystrokes to target user
-   * @param {String} str 
+   * @param {String} str
    */
   function sendToPeer(str) {
     sendToServer(targetUsername.value, username.value, "peer-data", str);
@@ -491,7 +463,7 @@ function loggedIn(initialUser) {
 
   /**
    * Function to send ICE
-   * @param {object} ice 
+   * @param {object} ice
    */
   function sendIce(ice) {
     if (ice.candidate) {
@@ -506,7 +478,7 @@ function loggedIn(initialUser) {
   }
   /**
    * Function to receive ICE
-   * @param {object} ice 
+   * @param {object} ice
    */
   function receiveIce(ice) {
     console.log("Received new ICE Candidate: " + ice);
@@ -636,7 +608,7 @@ function loggedIn(initialUser) {
                 }
                 coolDown = true;
               }
-              
+
               setTimeout(urgentCooldown, 60000);
               urgentQuestion = true;
               break;
@@ -649,52 +621,45 @@ function loggedIn(initialUser) {
     );
   }
 
-  
   /**
-   * Display email settings when email tab is clicked
-   */
-  settingsEmailTab.addEventListener("click", () => {
-    if (currentSettingsTab != "email") {
-      currentSettingsTab = "email";
-      settingsTimeTab.classList.remove("settings-tab-selected");
-      settingsNotifTab.classList.remove("settings-tab-selected");
-      settingsEmailTab.classList.add("settings-tab-selected");
-
-      settingsEmailBody.style.display = "flex";
-      settingsTimeBody.style.display = "none";
-      settingsNotifBody.style.display = "none";
-    }
-  });
-  /**
-   * Display time settings when time tab is clicked
-   */
-  settingsTimeTab.addEventListener("click", () => {
-    if (currentSettingsTab != "teacher") {
-      currentSettingsTab = "teacher";
-      settingsTimeTab.classList.add("settings-tab-selected");
-      settingsNotifTab.classList.remove("settings-tab-selected");
-      settingsEmailTab.classList.remove("settings-tab-selected");
-
-      settingsEmailBody.style.display = "none";
-      settingsNotifBody.style.display = "none";
-      settingsTimeBody.style.display = "flex";
-    }
-  });
-  /**
-   * Display notification settings when notification tab is clicked
-   */
-  settingsNotifTab.addEventListener("click", () => {
-    if (currentSettingsTab != "notification") {
-      currentSettingsTab = "notification";
-      settingsNotifTab.classList.add("settings-tab-selected");
-      settingsTimeTab.classList.remove("settings-tab-selected");
-      settingsEmailTab.classList.remove("settings-tab-selected");
-
-      settingsEmailBody.style.display = "none";
-      settingsTimeBody.style.display = "none";
-      settingsNotifBody.style.display = "flex";
-    }
-  });
+ * Function to save new hand raise wait time
+ * Hard part is to save both our side and update target side in real time
+ */
+setStudentSaveButton.addEventListener("click", () => {
+  if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
+    // Update document for target
+    db.collection("Users")
+      .doc(teacherUser.email)
+      .set({
+        displayName: teacherUser.displayName,
+        email: teacherUser.email,
+        teacherEmail: teacherUser.teacherEmail,
+        uid: teacherUser.uid,
+        photoURL: teacherUser.photoURL,
+        isTeacher: teacherUser.isTeacher,
+        studentTime: setStudentTimeInput.value,
+        beforeClassStartNotification: teacherUser.beforeClassStartNotification,
+        beforeClassEndNotification: teacherUser.beforeClassEndNotification,
+        notificationFrequency: teacherUser.notificationFrequency,
+        notificationRange: teacherUser.notificationRange,
+        vibrate: teacherUser.vibrate,
+        sound: teacherUser.sound
+      })
+      .then(function() {
+        // Once successfully saved, update our side and exit out of settings
+        teacherUser.studentTime = setStudentTimeInput.value;
+        document.querySelectorAll(".hand-span").forEach(element => {
+          element.style.animationDuration = setStudentTimeInput.value + "s";
+        });
+        document.querySelector(".minute").style.animationDuration =
+          setStudentTimeInput.value + "s";
+        settingsModal.click();
+      })
+      .catch(function(error) {
+        console.error("Error changing email: ", error);
+      });
+  }
+});
 
   /**
    * Function to save notification settings once clicked
@@ -704,13 +669,20 @@ function loggedIn(initialUser) {
     let rangeVal = setNotifRangeInput.value;
     // If input in correct range
     if (freqVal >= 1 && freqVal <= 5 && rangeVal >= 1 && rangeVal <= 15) {
-      // Valid, now update documents and local variables 
+      // Valid, now update documents and local variables
       let startNotif = beforeStartCheckbox.checked;
       let endNotif = beforeEndCheckbox.checked;
+      let vibrateNotif = vibrateCheckBox.checked;
+      let soundNotif = soundCheckbox.checked;
+
       let startUpload = "False";
       let endUpload = "False";
+      let vibrateUpload = "False";
+      let soundUpload = "False";
       if (startNotif) startUpload = "True";
       if (endNotif) endUpload = "True";
+      if (vibrateNotif) vibrateUpload = "True";
+      if (soundNotif) soundUpload = "True";
       db.collection("Users")
         .doc(user.email)
         .set({
@@ -724,69 +696,26 @@ function loggedIn(initialUser) {
           beforeClassStartNotification: startUpload,
           beforeClassEndNotification: endUpload,
           notificationFrequency: freqVal,
-          notificationRange: rangeVal
+          notificationRange: rangeVal,
+          vibrate: vibrateUpload,
+          sound: soundUpload
         })
         .then(function() {
           user.beforeClassEndNotification = startUpload;
           user.beforeClassEndNotification = endUpload;
           user.notificationFrequency = freqVal;
           user.notificationRange = rangeVal;
+          user.vibrate = vibrateUpload;
+          user.sound = soundUpload;
         })
         .catch(function(error) {
           console.error("Error changing email: ", error);
         });
-    }
-  });
-  /**
-   * Function to save new hand raise wait time
-   * Hard part is to save both our side and update target side in real time
-   */
-  setStudentSaveButton.addEventListener("click", () => {
-    if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
-      // Update document for target
-      db.collection("Users")
-        .doc(teacherUser.email)
-        .set({
-          displayName: teacherUser.displayName,
-          email: teacherUser.email,
-          teacherEmail: teacherUser.teacherEmail,
-          uid: teacherUser.uid,
-          photoURL: teacherUser.photoURL,
-          isTeacher: teacherUser.isTeacher,
-          studentTime: setStudentTimeInput.value,
-          beforeClassStartNotification:
-            teacherUser.beforeClassStartNotification,
-          beforeClassEndNotification: teacherUser.beforeClassEndNotification,
-          notificationFrequency: teacherUser.notificationFrequency,
-          notificationRange: teacherUser.notificationRange
-        })
-        .then(function() {
-          // Once successfully saved, update our side and exit out of settings
-          teacherUser.studentTime = setStudentTimeInput.value;
-          document.querySelectorAll(".hand-span").forEach(element => {
-            element.style.animationDuration = setStudentTimeInput.value + "s";
-          });
-          document.querySelector(".minute").style.animationDuration =
-            setStudentTimeInput.value + "s";
-          settingsModal.click();
-        })
-        .catch(function(error) {
-          console.error("Error changing email: ", error);
-        });
-    }
-  });
-  /**
-   * Function that shows dynamically an error message 
-   * if correct input not in range
-   */
-  setStudentTimeInput.addEventListener("keyup", () => {
-    if (setStudentTimeInput.value < 10 || setStudentTimeInput.value > 60) {
-      setStudentError.innerHTML = "Please enter a value between 10-60";
-    } else {
-      setStudentError.innerHTML = "";
     }
   });
   
+  
+
   /**
    * Function to display calendar
    */
@@ -796,93 +725,8 @@ function loggedIn(initialUser) {
     calendar.render();
     postCalendarLoad();
   });
+
   
-  /**
-   * Function that is called after every calender render to 
-   * render our own custom stuff to customize calendar
-   */
-  function postCalendarLoad() {
-    // If event object not previously loaded, then load once
-    if (events == null) {
-      gapi.client.calendar.events
-        .list({
-          calendarId: "primary",
-          timeMin: new Date("04 September 2019 00:00 UTC").toISOString(),
-          showDeleted: false,
-          singleEvents: true,
-          maxResults: 250,
-          orderBy: "startTime"
-        })
-        .then(function(response) {
-          // for each event gathered, upload to our calendar 
-          events = response.result.items;
-          for (let i = 0; i < events.length; i++) {
-            // Not all day events, need to process an all day event differently
-            if (events[i].start.dateTime) {
-              // Temp color, retrieve the color from the reference id to color object
-              let tempColor = calendarColors[events[i].colorId];
-              if (tempColor == null) {
-                tempColor = calendarColors[1];
-              }
-              // Add event
-              calendar.addEvent({
-                title: events[i].summary,
-                allDay: false,
-                start: events[i].start.dateTime,
-                end: events[i].end.dateTime,
-                backgroundColor: tempColor
-              });
-            } else {
-              // All day events
-              // Temp color
-              let tempColor = calendarColors[events[i].colorId];
-              if (tempColor == null) {
-                tempColor = calendarColors[1];
-              }
-              calendar.addEvent({
-                title: events[i].summary,
-                allDay: true,
-                start: events[i].start.date,
-                end: events[i].end.date,
-                backgroundColor: tempColor
-              });
-            }
-          }
-        });
-    }
-    // initialize calendar elements and how they are to be displayed
-    calendarHeader = calendarElement.childNodes[0];
-    calendarHeaderViewSelectorButtons = calendarHeader.querySelector(
-      ".fc-right"
-    );
-    dayButton = calendarHeaderViewSelectorButtons.querySelector(
-      ".fc-timeGridDay-button"
-    );
-    weekButton = calendarHeaderViewSelectorButtons.querySelector(
-      ".fc-timeGridWeek-button"
-    );
-    calendarTodayButton = calendarHeader.querySelector(".fc-today-button");
-    calendarPreviousButton = calendarHeader.querySelector(".fc-prev-button");
-    calendarNextButton = calendarHeader.querySelector(".fc-next-button");
-
-    // Customization
-    dayButton.innerHTML =
-      '<i class="material-icons calendar-icon">today</i>' + "<p>Day</p>";
-    dayButton.classList.add("calendar-button-theme");
-
-    weekButton.innerHTML =
-      '<i class="material-icons calendar-icon">view_week</i>' + "<p>Week</p>";
-    weekButton.classList.add("calendar-button-theme");
-
-    calendarTodayButton.innerHTML =
-      '<i class="material-icons calendar-icon">calendar_today</i>' +
-      "<p>Today</p>";
-    calendarTodayButton.classList.add("calendar-button-theme");
-
-    calendarNextButton.classList.add("calendar-button-theme");
-
-    calendarPreviousButton.classList.add("calendar-button-theme");
-  }
 
   /**
    * Function that initializes functions and variables
@@ -941,6 +785,9 @@ function loggedIn(initialUser) {
       beforeStartCheckbox.checked = true;
     if (user.beforeClassEndNotification == "True")
       beforeEndCheckbox.checked = true;
+    if (user.vibrate == "True") vibrateCheckBox.checked = true;
+    if ((user.sound = "True")) soundCheckbox.checked = true;
+
     setNotifRangeInput.value = user.notificationRange;
     setNotifFrequencyInput.value = user.notificationFrequency;
     // Target Label Set
@@ -995,49 +842,10 @@ function loggedIn(initialUser) {
       .catch(err => {
         console.log("Error getting document: ", err);
       });
+
     
-    /**
-     * Function that is called when user is typing to change target email
-     */
-    teacherChangeEmailInput.addEventListener("keyup", () => {
-      // Things to display:
-      // - whether a proper email format
-      // - whether the target email and target retype email match
-      var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (regexEmail.test(teacherChangeEmailInput.value.toLowerCase())) {
-        if (teacherChangeEmailInput.value == teacherChangeRetypeInput.value) {
-          // Same email and proper format
-          teacherEmailError.innerHTML = "";
-          teacherRetypeEmailError.innerHTML = "";
-        } else {
-          // Different emails proper format
-          teacherEmailError.innerHTML = "Emails not matching";
-        }
-      } else {
-        // Improper email format and not same
-        teacherEmailError.innerHTML = "Email not proper format";
-      }
-    });
+
     
-    /**
-     * Same as above but for the retype email
-     */
-    teacherChangeRetypeInput.addEventListener("keyup", () => {
-      var regexEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (regexEmail.test(teacherChangeRetypeInput.value.toLowerCase())) {
-        if (teacherChangeEmailInput.value == teacherChangeRetypeInput.value) {
-          // Same email and proper format
-          teacherEmailError.innerHTML = "";
-          teacherRetypeEmailError.innerHTML = "";
-        } else {
-          // Different emails proper format
-          teacherRetypeEmailError.innerHTML = "Emails not matching";
-        }
-      } else {
-        // Improper email format
-        teacherRetypeEmailError.innerHTML = "Email not proper format";
-      }
-    });
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
@@ -1080,7 +888,7 @@ function loggedIn(initialUser) {
     drawerHeaderEmail.innerHTML = user.email;
 
     mdc.ripple.MDCRipple.attachTo(drawerOpenButton);
-    
+
     /**
      * Function to open the drawer once clicked
      */
@@ -1098,7 +906,7 @@ function loggedIn(initialUser) {
     listEl.addEventListener("click", event => {
       drawer.open = false;
     });
-    
+
     // Function to open settings menu
     settingsSpan.addEventListener("click", () => {
       settingsModal.click();
@@ -1115,6 +923,8 @@ function loggedIn(initialUser) {
           beforeStartCheckbox.checked = true;
         if (user.beforeClassEndNotification == "True")
           beforeEndCheckbox.checked = true;
+        if (user.vibrate == "True") vibrateCheckBox.checked = true;
+        if ((user.sound = "True")) soundCheckbox.checked = true;
         setNotifRangeInput.value = user.notificationRange;
         setNotifFrequencyInput.value = user.notificationFrequency;
         // Set tab index's
@@ -1162,7 +972,7 @@ function loggedIn(initialUser) {
         }
       }
     });
-    
+
     /**
      * Function that undo's the changing of the teacher's email
      */
@@ -1181,7 +991,9 @@ function loggedIn(initialUser) {
           beforeClassStartNotification: user.beforeClassStartNotification,
           beforeClassEndNotification: user.beforeClassEndNotification,
           notificationFrequency: user.notificationFrequency,
-          notificationRange: user.notificationRange
+          notificationRange: user.notificationRange,
+          vibrate: user.vibrate,
+          sound: user.sound
         })
         .then(function() {
           teacherUser = previousTeacherUser;
@@ -1239,13 +1051,12 @@ function loggedIn(initialUser) {
     }
 
     /**
-     * Function that is called when saving the change of the 
+     * Function that is called when saving the change of the
      * target email address
      */
     saveTeacherEmailButton.addEventListener(
       "click",
       () => {
-        
         // Check if email address and retype email address are both valid
         // addresses and are the same
         if (teacherChangeRetypeInput.value == teacherChangeEmailInput.value) {
@@ -1267,7 +1078,9 @@ function loggedIn(initialUser) {
                 beforeClassStartNotification: user.beforeClassStartNotification,
                 beforeClassEndNotification: user.beforeClassEndNotification,
                 notificationFrequency: user.notificationFrequency,
-                notificationRange: user.notificationRange
+                notificationRange: user.notificationRange,
+                vibrate: user.vibrate,
+                sound: user.sound
               })
               .then(function() {
                 // Get new teacher profile photo
@@ -1364,7 +1177,7 @@ function loggedIn(initialUser) {
 
   /**
    * Function to answer a WebRTC call
-   * @param {object} call 
+   * @param {object} call
    */
   function answer(call) {
     createPeerConnection();
@@ -1431,10 +1244,10 @@ function loggedIn(initialUser) {
         }
       );
   }
-  
+
   /**
    * Function to handle incoming data to move the camera
-   * @param {String} peerData 
+   * @param {String} peerData
    */
   function handlePeerData(peerData) {
     console.log(peerData);
@@ -1575,7 +1388,7 @@ function loggedIn(initialUser) {
   }
   /**
    * Function to handle a video in a signalling state
-   * @param {object} event 
+   * @param {object} event
    */
   function handleTrackEvent(event) {
     console.log(
