@@ -85,8 +85,8 @@ firebase.auth().onAuthStateChanged(user => {
  * Function to logout user
  */
 function logOut() {
+  gapi.auth2.getAuthInstance().signOut();
   firebase.auth().signOut();
-  // gapi.auth2.getAuthInstance().signOut();
 }
 
 /**
