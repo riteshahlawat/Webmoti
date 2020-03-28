@@ -27,7 +27,19 @@ var calendarPreviousButton;
 var calendarNextButton;
 var dayButton;
 var weekButton;
-
+var calendarColors = {
+  1: "#7986cb",
+  2: "#33b679",
+  3: "#8e24aa",
+  4: "#e67c73",
+  5: "#f6c026",
+  6: "#f5511d",
+  7: "#039be5",
+  8: "#616161",
+  9: "#3f51b5",
+  10: "#0b8043",
+  11: "#d60000"
+};
 /**
  *  On load, called to load the auth2 library and API client library.
  */
@@ -55,6 +67,7 @@ function initClient() {
         // Handle the initial sign-in state.
         // updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
         // authorizeButton.onclick = handleAuthClick;
+        handleAuthClick();
         // signoutButton.onclick = handleSignoutClick;
       },
       function(error) {
@@ -70,19 +83,21 @@ function initClient() {
  */
 function updateSigninStatus(isSignedIn) {
   if (isSignedIn) {
-    authorizeButton.style.display = "none";
-    signoutButton.style.display = "block";
+    console.log("Signed In!!")
+    // authorizeButton.style.display = "none";
+    // signoutButton.style.display = "block";
     // listUpcomingEvents();
   } else {
-    authorizeButton.style.display = "block";
-    signoutButton.style.display = "none";
+    console.log("Not Signed In!!")
+    // authorizeButton.style.display = "block";
+    // signoutButton.style.display = "none";
   }
 }
 
 /**
  *  Sign in the user upon button click.
  */
-function handleAuthClick(event) {
+function handleAuthClick() {
   gapi.auth2.getAuthInstance().signIn();
 }
 
@@ -114,87 +129,4 @@ function listUpcomingEvents() {
     });
 }
 
-/**
- * Function that is called after every calender render to
- * render our own custom stuff to customize calendar
- */
-function postCalendarLoad() {
-  // If event object not previously loaded, then load once
-  if (events == null) {
-    gapi.client.calendar.events
-      .list({
-        calendarId: "primary",
-        timeMin: new Date("04 September 2019 00:00 UTC").toISOString(),
-        showDeleted: false,
-        singleEvents: true,
-        maxResults: 250,
-        orderBy: "startTime"
-      })
-      .then(function(response) {
-        // for each event gathered, upload to our calendar
-        events = response.result.items;
-        for (let i = 0; i < events.length; i++) {
-          // Not all day events, need to process an all day event differently
-          if (events[i].start.dateTime) {
-            // Temp color, retrieve the color from the reference id to color object
-            let tempColor = calendarColors[events[i].colorId];
-            if (tempColor == null) {
-              tempColor = calendarColors[1];
-            }
-            // Add event
-            calendar.addEvent({
-              title: events[i].summary,
-              allDay: false,
-              start: events[i].start.dateTime,
-              end: events[i].end.dateTime,
-              backgroundColor: tempColor
-            });
-          } else {
-            // All day events
-            // Temp color
-            let tempColor = calendarColors[events[i].colorId];
-            if (tempColor == null) {
-              tempColor = calendarColors[1];
-            }
-            calendar.addEvent({
-              title: events[i].summary,
-              allDay: true,
-              start: events[i].start.date,
-              end: events[i].end.date,
-              backgroundColor: tempColor
-            });
-          }
-        }
-      });
-  }
-  // initialize calendar elements and how they are to be displayed
-  calendarHeader = calendarElement.childNodes[0];
-  calendarHeaderViewSelectorButtons = calendarHeader.querySelector(".fc-right");
-  dayButton = calendarHeaderViewSelectorButtons.querySelector(
-    ".fc-timeGridDay-button"
-  );
-  weekButton = calendarHeaderViewSelectorButtons.querySelector(
-    ".fc-timeGridWeek-button"
-  );
-  calendarTodayButton = calendarHeader.querySelector(".fc-today-button");
-  calendarPreviousButton = calendarHeader.querySelector(".fc-prev-button");
-  calendarNextButton = calendarHeader.querySelector(".fc-next-button");
 
-  // Customization
-  dayButton.innerHTML =
-    '<i class="material-icons calendar-icon">today</i>' + "<p>Day</p>";
-  dayButton.classList.add("calendar-button-theme");
-
-  weekButton.innerHTML =
-    '<i class="material-icons calendar-icon">view_week</i>' + "<p>Week</p>";
-  weekButton.classList.add("calendar-button-theme");
-
-  calendarTodayButton.innerHTML =
-    '<i class="material-icons calendar-icon">calendar_today</i>' +
-    "<p>Today</p>";
-  calendarTodayButton.classList.add("calendar-button-theme");
-
-  calendarNextButton.classList.add("calendar-button-theme");
-
-  calendarPreviousButton.classList.add("calendar-button-theme");
-}

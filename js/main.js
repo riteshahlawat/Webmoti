@@ -149,7 +149,7 @@ function loggedIn(initialUser) {
   var teacherChangeEmailLabel = document.getElementById(
     "teacher-input-label-field"
   );
-  
+
   var saveTeacherEmailButton = document.getElementById(
     "edit-teacher-email-button"
   );
@@ -174,16 +174,13 @@ function loggedIn(initialUser) {
   var teacherRetypeEmailInputWorkable = document.getElementById(
     "teacher-input-retype-text-field"
   );
-  
+
   const teacherChangeEmailDifferentSnackbar = new mdc.snackbar.MDCSnackbar(
     document.getElementById("teacher-email-change-different-snackbar")
   );
   const teacherImproperChangeEmailSnackbar = new mdc.snackbar.MDCSnackbar(
     document.getElementById("improper-teacher-change-email-snackbar")
   );
-
-
-  
 
   // Notifications settings
   var beforeStartCheckbox = document.getElementById("before-start-checkbox");
@@ -214,16 +211,10 @@ function loggedIn(initialUser) {
   var userProfileState = document.getElementById("user-photo-state");
   var teacherProfileState = document.getElementById("teacher-photo-state");
 
-  
-
-  
-
-  
-
   // Calendar
   var calendarModal = document.getElementById("calendar-modal");
   var calendar;
-  
+
   // object representing google's color ids and respective colors
   var calendarColors = {
     1: "#7986cb",
@@ -349,7 +340,92 @@ function loggedIn(initialUser) {
     hangupButton.classList.add("disabled");
     callButton.classList.remove("disabled");
   }
+  /**
+   * Function that is called after every calender render to
+   * render our own custom stuff to customize calendar
+   */
+  function postCalendarLoad() {
+    // If event object not previously loaded, then load once
+    if (events == null) {
+      gapi.client.calendar.events
+        .list({
+          calendarId: "primary",
+          timeMin: new Date("04 September 2019 00:00 UTC").toISOString(),
+          showDeleted: false,
+          singleEvents: true,
+          maxResults: 250,
+          orderBy: "startTime"
+        })
+        .then(function(response) {
+          // for each event gathered, upload to our calendar
+          events = response.result.items;
+          for (let i = 0; i < events.length; i++) {
+            // Not all day events, need to process an all day event differently
+            if (events[i].start.dateTime) {
+              // Temp color, retrieve the color from the reference id to color object
+              let tempColor = calendarColors[events[i].colorId];
+              if (tempColor == null) {
+                tempColor = calendarColors[1];
+              }
+              // Add event
+              calendar.addEvent({
+                title: events[i].summary,
+                allDay: false,
+                start: events[i].start.dateTime,
+                end: events[i].end.dateTime,
+                backgroundColor: tempColor
+              });
+            } else {
+              // All day events
+              // Temp color
+              let tempColor = calendarColors[events[i].colorId];
+              if (tempColor == null) {
+                tempColor = calendarColors[1];
+              }
+              calendar.addEvent({
+                title: events[i].summary,
+                allDay: true,
+                start: events[i].start.date,
+                end: events[i].end.date,
+                backgroundColor: tempColor
+              });
+            }
+          }
+        });
+    }
+    // initialize calendar elements and how they are to be displayed
+    calendarHeader = calendarElement.childNodes[0];
+    calendarHeaderViewSelectorButtons = calendarHeader.querySelector(
+      ".fc-right"
+    );
+    dayButton = calendarHeaderViewSelectorButtons.querySelector(
+      ".fc-timeGridDay-button"
+    );
+    weekButton = calendarHeaderViewSelectorButtons.querySelector(
+      ".fc-timeGridWeek-button"
+    );
+    calendarTodayButton = calendarHeader.querySelector(".fc-today-button");
+    calendarPreviousButton = calendarHeader.querySelector(".fc-prev-button");
+    calendarNextButton = calendarHeader.querySelector(".fc-next-button");
 
+    // Customization
+    dayButton.innerHTML =
+      '<i class="material-icons calendar-icon">today</i>' + "<p>Day</p>";
+    dayButton.classList.add("calendar-button-theme");
+
+    weekButton.innerHTML =
+      '<i class="material-icons calendar-icon">view_week</i>' + "<p>Week</p>";
+    weekButton.classList.add("calendar-button-theme");
+
+    calendarTodayButton.innerHTML =
+      '<i class="material-icons calendar-icon">calendar_today</i>' +
+      "<p>Today</p>";
+    calendarTodayButton.classList.add("calendar-button-theme");
+
+    calendarNextButton.classList.add("calendar-button-theme");
+
+    calendarPreviousButton.classList.add("calendar-button-theme");
+  }
   /**
    * Function to create a new RTC connection
    */
@@ -622,44 +698,45 @@ function loggedIn(initialUser) {
   }
 
   /**
- * Function to save new hand raise wait time
- * Hard part is to save both our side and update target side in real time
- */
-setStudentSaveButton.addEventListener("click", () => {
-  if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
-    // Update document for target
-    db.collection("Users")
-      .doc(teacherUser.email)
-      .set({
-        displayName: teacherUser.displayName,
-        email: teacherUser.email,
-        teacherEmail: teacherUser.teacherEmail,
-        uid: teacherUser.uid,
-        photoURL: teacherUser.photoURL,
-        isTeacher: teacherUser.isTeacher,
-        studentTime: setStudentTimeInput.value,
-        beforeClassStartNotification: teacherUser.beforeClassStartNotification,
-        beforeClassEndNotification: teacherUser.beforeClassEndNotification,
-        notificationFrequency: teacherUser.notificationFrequency,
-        notificationRange: teacherUser.notificationRange,
-        vibrate: teacherUser.vibrate,
-        sound: teacherUser.sound
-      })
-      .then(function() {
-        // Once successfully saved, update our side and exit out of settings
-        teacherUser.studentTime = setStudentTimeInput.value;
-        document.querySelectorAll(".hand-span").forEach(element => {
-          element.style.animationDuration = setStudentTimeInput.value + "s";
+   * Function to save new hand raise wait time
+   * Hard part is to save both our side and update target side in real time
+   */
+  setStudentSaveButton.addEventListener("click", () => {
+    if (setStudentTimeInput.value >= 10 && setStudentTimeInput.value <= 60) {
+      // Update document for target
+      db.collection("Users")
+        .doc(teacherUser.email)
+        .set({
+          displayName: teacherUser.displayName,
+          email: teacherUser.email,
+          teacherEmail: teacherUser.teacherEmail,
+          uid: teacherUser.uid,
+          photoURL: teacherUser.photoURL,
+          isTeacher: teacherUser.isTeacher,
+          studentTime: setStudentTimeInput.value,
+          beforeClassStartNotification:
+            teacherUser.beforeClassStartNotification,
+          beforeClassEndNotification: teacherUser.beforeClassEndNotification,
+          notificationFrequency: teacherUser.notificationFrequency,
+          notificationRange: teacherUser.notificationRange,
+          vibrate: teacherUser.vibrate,
+          sound: teacherUser.sound
+        })
+        .then(function() {
+          // Once successfully saved, update our side and exit out of settings
+          teacherUser.studentTime = setStudentTimeInput.value;
+          document.querySelectorAll(".hand-span").forEach(element => {
+            element.style.animationDuration = setStudentTimeInput.value + "s";
+          });
+          document.querySelector(".minute").style.animationDuration =
+            setStudentTimeInput.value + "s";
+          settingsModal.click();
+        })
+        .catch(function(error) {
+          console.error("Error changing email: ", error);
         });
-        document.querySelector(".minute").style.animationDuration =
-          setStudentTimeInput.value + "s";
-        settingsModal.click();
-      })
-      .catch(function(error) {
-        console.error("Error changing email: ", error);
-      });
-  }
-});
+    }
+  });
 
   /**
    * Function to save notification settings once clicked
@@ -713,8 +790,6 @@ setStudentSaveButton.addEventListener("click", () => {
         });
     }
   });
-  
-  
 
   /**
    * Function to display calendar
@@ -725,8 +800,6 @@ setStudentSaveButton.addEventListener("click", () => {
     calendar.render();
     postCalendarLoad();
   });
-
-  
 
   /**
    * Function that initializes functions and variables
@@ -843,9 +916,6 @@ setStudentSaveButton.addEventListener("click", () => {
         console.log("Error getting document: ", err);
       });
 
-    
-
-    
     /* --------------------------------------------- */
     /* ------------MATERIAL DESIGN INIT--------------*/
     /* --------------------------------------------- */
