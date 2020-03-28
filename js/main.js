@@ -784,6 +784,7 @@ function loggedIn(initialUser) {
           user.notificationRange = rangeVal;
           user.vibrate = vibrateUpload;
           user.sound = soundUpload;
+          settingsModal.click();
         })
         .catch(function(error) {
           console.error("Error changing email: ", error);

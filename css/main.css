@@ -216,14 +216,32 @@ input {
   color: black;
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 #modal-header-container {
   font-family: "Roboto", sans-serif;
   font-size: 25px;
   font-weight: 100;
-  /* top: 50%; */
-  transform: translate(0, -55%);
+}
+#modal-header-title {
+  user-select: none;
+  margin: 0;
+}
+#modal-header-hint {
+  user-select: none;
+  margin-top: 5px;
+  width: 70%;
+  font-family: "Roboto", sans-serif;
+  font-weight: 200;
+  text-align: center;
+  font-size: 15px;
+}
+@media (max-width: 1268px) {
+  #modal-header-hint {
+    width: 80%;
+    font-size: 14px;
+  }
 }
 .modal-body {
   height: 80%;
