@@ -6,7 +6,7 @@ body {
   margin: 0 !important;
   overflow-x: hidden !important;
 }
-
+/* Video */
 video {
   max-width: 1280px !important;
   max-height: 720px !important;
@@ -34,6 +34,7 @@ video {
   top: -300px;
   width: 100px;
 }
+/* Buttons for call/hangup */
 button {
   font-size: 150%;
   text-align: center;
@@ -53,6 +54,7 @@ button {
   min-height: 40px !important;
   min-width: 100px !important;
 }
+/* Text inputs for both your email and target email */
 #username {
   font-size: 18px;
   user-select: none;
@@ -69,6 +71,7 @@ button {
 .right {
   width: 70vw;
 }
+/* Layout of the text input/button at the top of the page */
 .main-nav {
   width: 100vw;
   background-color: transparent;
@@ -122,6 +125,40 @@ input {
   border-style: solid;
   border-radius: 5px;
 }
+/* Photo */
+.photo-div {
+  width: 70px;
+  height: 70px;
+  background-position: center;
+  background-size: cover;
+  border-radius: 50%;
+  background-image: url("https://www.cmcaindia.org/wp-content/uploads/2015/11/default-profile-picture-gmail-2.png");
+}
+.user-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.photo-element {
+  display: flex;
+  flex-direction: row;
+  margin: 0 10px;
+  align-items: center;
+}
+
+.photo-state {
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  margin-top: 100%;
+  transform: translate(-50%, -100%);
+  margin-bottom: 5px;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 2px;
+  border-color: rgba(32, 165, 32, 0.575);
+}
 
 .stage {
   margin-top: 20px;
@@ -135,8 +172,6 @@ input {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   flex-direction: row;
-  /* justify-content: center;
-  align-items: center; */
   z-index: 1; /* Sit on top */
   padding-top: 100px; /* Location of the box */
   left: 0;
@@ -193,7 +228,7 @@ input {
   }
 }
 
-/* The Close Button */
+/* Settings close button */
 .close {
   color: black;
   float: right;
@@ -208,7 +243,7 @@ input {
   text-decoration: none;
   cursor: pointer;
 }
-
+/* Settings modal header */
 .modal-header {
   height: 10%;
   padding: 2px 16px;
@@ -243,6 +278,7 @@ input {
     font-size: 14px;
   }
 }
+/* Settings modal body */
 .modal-body {
   height: 80%;
   padding: 2px 16px;
@@ -260,6 +296,7 @@ input {
   justify-content: space-around;
   align-items: center;
 }
+/* Setting tabs */
 .settings-tab {
   /* Width is 1/Amount of tabs -1 */
   width: 32%;
@@ -289,6 +326,7 @@ input {
   font-weight: 300;
   user-select: none;
 }
+/* Settings modal body (elements for each tab would go here) */
 .modal-body-post-tabs {
   display: flex;
   flex-direction: column;
@@ -296,7 +334,7 @@ input {
   width: 90%;
   margin-top: 10px;
 }
-
+/* Change teacher email tab body */
 #modal-change-teacher-email-text > * {
   font-family: "Lato", sans-serif;
   font-weight: 300;
@@ -333,39 +371,8 @@ input {
   justify-content: flex-start;
   /* margin-right: 30%; */
 }
-.photo-div {
-  width: 70px;
-  height: 70px;
-  background-position: center;
-  background-size: cover;
-  border-radius: 50%;
-  background-image: url("https://www.cmcaindia.org/wp-content/uploads/2015/11/default-profile-picture-gmail-2.png");
-}
-.user-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-}
-.photo-element {
-  display: flex;
-  flex-direction: row;
-  margin: 0 10px;
-  align-items: center;
-}
 
-.photo-state {
-  width: 10px;
-  height: 10px;
-  background-color: transparent;
-  margin-top: 100%;
-  transform: translate(-50%, -100%);
-  margin-bottom: 5px;
-  border-radius: 50%;
-  border-style: solid;
-  border-width: 2px;
-  border-color: rgba(32, 165, 32, 0.575);
-}
+
 #teacher-input-retype-text-field {
   margin-top: 15px;
 }
@@ -607,12 +614,7 @@ input {
     transform: rotate(405deg);
   }
 }
-
-#is-teacher-switch-text {
-  user-select: none;
-  font-family: "Roboto", sans-serif;
-  font-size: 18px;
-}
+/* Settings time tab body */
 #set-student-time-group {
   display: flex;
   flex-direction: column;
@@ -638,6 +640,8 @@ input {
   font-family: "Roboto", sans-serif;
   font-size: 13px;
 }
+
+/* Setttings notification body */
 .notification-type {
   margin-bottom: 5px;
   display: flex;
@@ -656,7 +660,7 @@ input {
   justify-content: center;
   align-items: center;
 }
-
+/* Calendar */
 #calendar-widget {
   border-radius: 50%;
   width: 42px;
